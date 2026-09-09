@@ -9,15 +9,15 @@ void Config::parse_command_line(int argc, const char* const argv[])
 	try {
 		po::options_description desc{"Command line options"};
 		// clang-format off
-        desc.add_options()
-            ("help", "print this help message")
-            ("trace-file,f", po::value<std::string>()->required(), "trace file")
-            ("data-file,d", po::value<std::string>()->required(), "data source file")
-            ("host,h", po::value<std::string>()->default_value("localhost"), "host address")
-            ("port,p", po::value<int>()->default_value(9000), "host port")
-            ("threads,t", po::value<int>()->default_value(4), "number of worker threads")
-            ("buffer-size", po::value<size_t>()->default_value(4096), "size of the request buffer")
-        ;
+		desc.add_options()
+			("help", "print this help message")
+			("trace-file,f", po::value<std::string>()->required(), "trace file")
+			("data-file,d", po::value<std::string>()->required(), "data source file")
+			("host,h", po::value<std::string>()->default_value("localhost"), "host address")
+			("port,p", po::value<int>()->default_value(9000), "host port")
+			("threads,t", po::value<int>()->default_value(4), "number of worker threads")
+			("buffer-size", po::value<size_t>()->default_value(4096), "size of the request buffer")
+		;
 		// clang-format on
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
