@@ -21,7 +21,7 @@ void Config::parse_command_line(int argc, const char* const argv[])
 		// clang-format on
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
-		
+
 		if (vm.count("help")) {
 			help = true;
 			std::stringstream ss;
@@ -29,7 +29,7 @@ void Config::parse_command_line(int argc, const char* const argv[])
 			help_msg = std::move(ss).str();
 			return;
 		}
-		
+
 		po::notify(vm);
 
 		trace_file = vm["trace-file"].as<std::string>();

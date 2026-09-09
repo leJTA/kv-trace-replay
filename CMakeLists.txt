@@ -30,7 +30,7 @@ set(SRCS
 )
 
 set(HDRS
-	${CMAKE_CURRENT_SOURCE_DIR}/config.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/request.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/bounded_queue.hpp
 )
