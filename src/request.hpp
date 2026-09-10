@@ -32,6 +32,22 @@ namespace KV_trace {
 	};
 	using Request_buffer = Bounded_queue<Request>;
 
+	static Operation _op_from_str(std::string_view op)
+	{
+		if (op == "get") {
+			return Operation::OP_GET;
+		}
+		else if (op == "set") {
+			return Operation::OP_SET;
+		}
+		else if (op == "deleted") {
+			return Operation::OP_DELETE;
+		}
+		else {
+			return Operation::OP_UNSUPPORTED;
+		}
+	}
+
 	Request request_from_csv_line(std::string_view line)
 	{
 		std::vector<std::string> fields =
@@ -61,22 +77,6 @@ namespace KV_trace {
 		// 		  << req.value_size << "\n";
 
 		return req;
-	}
-
-	static Operation _op_from_str(std::string_view op)
-	{
-		if (op == "get") {
-			return Operation::OP_GET;
-		}
-		else if (op == "set") {
-			return Operation::OP_SET;
-		}
-		else if (op == "deleted") {
-			return Operation::OP_DELETE;
-		}
-		else {
-			return Operation::OP_UNSUPPORTED;
-		}
 	}
 } // namespace KV_trace
 
