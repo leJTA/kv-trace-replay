@@ -1,5 +1,5 @@
-#ifndef __DATA_PRODUCER_HPP__
-#define __DATA_PRODUCER_HPP__
+#ifndef __DATA_SOURCE_HPP__
+#define __DATA_SOURCE_HPP__
 
 #include <fstream>
 #include <memory>
@@ -33,4 +33,4 @@ private:
 	std::vector<char> _data;
 };
 
-#endif // __DATA_PRODUCER_HPP__
+#endif // __DATA_SOURCE_HPP__
