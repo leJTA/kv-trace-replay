@@ -13,7 +13,7 @@ public:
 	Bounded_queue& operator=(const Bounded_queue&) = delete;
 	Bounded_queue& operator=(Bounded_queue&&) = delete;
 
-	void push(T value)
+	void push(const T& value)
 	{
 		std::unique_lock<std::mutex> lock{this->_mut};
 
@@ -30,8 +30,8 @@ public:
 		std::unique_lock<std::mutex> lock(this->_mut);
 
 		// Wait until the queue becomes not empty.
-		this->_not_empty.wait(lock, [this] { return !this->data.empty(); });
-		T value = this->data.front();
+		this->_not_empty.wait(lock, [this] { return !this->_data.empty(); });
+		T value = this->_data.front();
 		this->_data.pop();
 		lock.unlock();
 
