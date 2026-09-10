@@ -13,9 +13,7 @@ class Client_pool {
 public:
 	std::chrono::steady_clock::time_point start_time;
 
-	explicit Client_pool(int pool_size)
-		: _request_buffer{nullptr}, _pool_size{pool_size}, _done{false}
-	{}
+	explicit Client_pool(int pool_size): _request_buffer{nullptr}, _pool_size{pool_size} {}
 
 	void set_request_handler(std::function<void(const Request&)> handler)
 	{
@@ -31,21 +29,18 @@ public:
 		start_time = std::chrono::steady_clock::now();
 		for (int i = 0; i < _pool_size; ++i) {
 			_pool.emplace_back([this]() {
-				while (true) {
-					Request request = this->_request_buffer->pop();
-					this->_request_handler(request);
+				while (auto request = this->_request_buffer->pop()) {
+					this->_request_handler(*request);
 				}
 			});
 		}
 	}
-	void stop() { _done = true; }
 
 private:
 	std::function<void(const Request&)> _request_handler;
 	Request_buffer* _request_buffer;
 	std::vector<std::jthread> _pool;
 	int _pool_size;
-	std::atomic_bool _done;
 };
 
 #endif // __CLIENT_POOL_HPP__

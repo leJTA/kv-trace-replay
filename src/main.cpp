@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 
 		if (req.operation == std::string_view("set")) {
 			http_client->Post(std::string("/").append(req.key), data_source.data(), req.value_size,
-					 "application/octet-stream");
+							  "application/octet-stream");
 		}
 	});
 	client_pool.start();
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 		std::cout << "Unable to open file: " << config.trace_file << "\n";
 	}
 
-	client_pool.stop();
+	request_buffer.close();
 
 	return EXIT_SUCCESS;
 }
