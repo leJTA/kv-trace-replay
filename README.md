@@ -24,3 +24,9 @@ Command line options:
   -t [ --threads ] arg (=4)      number of worker threads
   --buffer-size arg (=4096)      size of the request buffer
 ```
+
+## Trace format
+
+It supports [Twitter](https://github.com/cacheMon/cache_dataset#twitter-twemcache-request-traces) trace file formats.
+
+<!-- [Meta](https://github.com/cacheMon/cache_dataset#meta-key-value-cache-traces). -->
