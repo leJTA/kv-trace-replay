@@ -13,19 +13,13 @@
 
 #include "bounded_queue.hpp"
 
-enum class Operation {
-	GET,
-	SET,
-	DELETE,
-};
-
 struct Request {
 	uint32_t timestamp;
 	const char* key;
 	uint8_t key_size;
 	uint32_t value_size;
 	uint8_t client_id;
-	Operation operation;
+	char operation[8];
 	uint32_t ttl;
 
 	static Request parse_line(std::string_view line)
@@ -48,8 +42,11 @@ struct Request {
 		std::from_chars(fields[2].data(), fields[2].data() + fields[2].size(), req.key_size);
 		std::from_chars(fields[3].data(), fields[3].data() + fields[3].size(), req.value_size);
 		std::from_chars(fields[4].data(), fields[4].data() + fields[4].size(), req.client_id);
-		req.operation = (fields[5] == "get" ? Operation::GET : Operation::SET);
+		strcpy(req.operation, fields[5].c_str());
 		std::from_chars(fields[6].data(), fields[6].data() + fields[6].size(), req.ttl);
+
+		std::cout << req.timestamp << " " << req.key << ", " << req.operation << " "
+				  << req.value_size << "\n";
 
 		return req;
 	}
