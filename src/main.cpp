@@ -11,6 +11,8 @@
 #include "request.hpp"
 #include "trace_producer.hpp"
 
+using namespace KV_trace;
+
 constexpr size_t max_size = 256 * 1024; // 256 KB
 
 int main(int argc, char* argv[])
@@ -54,11 +56,10 @@ int main(int argc, char* argv[])
 		std::this_thread::sleep_until(client_pool.start_time + std::chrono::seconds(req.timestamp));
 
 		// send request
-		if (req.operation == std::string_view("get")) {
+		if (req.operation == Operation::OP_GET) {
 			http_client->Get(std::string("/").append(req.key));
 		}
-
-		if (req.operation == std::string_view("set")) {
+		if (req.operation == Operation::OP_SET) {
 			http_client->Post(std::string("/").append(req.key), data_source.data(), req.value_size,
 							  "application/octet-stream");
 		}

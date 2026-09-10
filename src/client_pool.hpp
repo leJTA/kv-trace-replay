@@ -9,38 +9,40 @@
 
 #include "request.hpp"
 
-class Client_pool {
-public:
-	std::chrono::steady_clock::time_point start_time;
+namespace KV_trace {
+	class Client_pool {
+	public:
+		std::chrono::steady_clock::time_point start_time;
 
-	explicit Client_pool(int pool_size): _request_buffer{nullptr}, _pool_size{pool_size} {}
+		explicit Client_pool(int pool_size): _request_buffer{nullptr}, _pool_size{pool_size} {}
 
-	void set_request_handler(std::function<void(const Request&)> handler)
-	{
-		_request_handler = handler;
-	}
-	void attach_request_buffer(Request_buffer& request_buffer)
-	{
-		_request_buffer = &request_buffer;
-	}
-
-	void start()
-	{
-		start_time = std::chrono::steady_clock::now();
-		for (int i = 0; i < _pool_size; ++i) {
-			_pool.emplace_back([this]() {
-				while (auto request = this->_request_buffer->pop()) {
-					this->_request_handler(*request);
-				}
-			});
+		void set_request_handler(std::function<void(const Request&)> handler)
+		{
+			_request_handler = handler;
 		}
-	}
+		void attach_request_buffer(Request_buffer& request_buffer)
+		{
+			_request_buffer = &request_buffer;
+		}
 
-private:
-	std::function<void(const Request&)> _request_handler;
-	Request_buffer* _request_buffer;
-	std::vector<std::jthread> _pool;
-	int _pool_size;
-};
+		void start()
+		{
+			start_time = std::chrono::steady_clock::now();
+			for (int i = 0; i < _pool_size; ++i) {
+				_pool.emplace_back([this]() {
+					while (auto request = this->_request_buffer->pop()) {
+						this->_request_handler(*request);
+					}
+				});
+			}
+		}
+
+	private:
+		std::function<void(const Request&)> _request_handler;
+		Request_buffer* _request_buffer;
+		std::vector<std::jthread> _pool;
+		int _pool_size;
+	};
+} // namespace KV_trace
 
 #endif // __CLIENT_POOL_HPP__
