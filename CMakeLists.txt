@@ -25,17 +25,17 @@ find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
 set(SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/config.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/config.cpp
 )
 
 set(HDRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/config.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/request.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/bounded_queue.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/trace_producer.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/client_pool.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/data_source.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/config.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/request.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/bounded_queue.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_producer.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/client_pool.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/data_source.hpp
 )
 
 add_executable(kv_trace_replay ${SRCS} ${HDRS})
