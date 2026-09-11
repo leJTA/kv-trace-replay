@@ -36,6 +36,7 @@ set(HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_producer.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/client_pool.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/data_source.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_player.hpp
 )
 
 add_executable(kv_trace_replay ${SRCS} ${HDRS})
@@ -45,6 +46,7 @@ target_link_libraries(kv_trace_replay
         httplib
         Boost::program_options
         Threads::Threads
+        memcached
 )
 
 # target_link_options(kv_trace_replay PRIVATE -"static")

@@ -1,19 +1,10 @@
-#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <string_view>
 
 #include "httplib.h"
 
-#include "client_pool.hpp"
-#include "config.hpp"
-#include "data_source.hpp"
-#include "request.hpp"
-#include "trace_producer.hpp"
-
-using namespace KV_trace;
-
-constexpr size_t max_size = 256 * 1024; // 256 KB
+#include "trace_player.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -40,39 +31,12 @@ int main(int argc, char* argv[])
 	// std::cout << "[INFO] Request Buffer size : " << config.buffer_size << "\n";
 	// std::cout << "[INFO] ----------------------------------------------------------------\n\n";
 
-	Data_source data_source{max_size};
-	if (!data_source.load(config.data_file)) {
+	KV_trace::Trace_player player{config.trace_file, config.data_file, config.host,
+								  config.port,		 config.nthreads,  config.buffer_size};
+
+	if (!player.run()) {
 		return EXIT_FAILURE;
 	}
-
-	Request_buffer request_buffer{config.buffer_size};
-
-	Client_pool client_pool{config.nthreads};
-	client_pool.attach_request_buffer(request_buffer);
-	client_pool.set_request_handler([&](const Request& req) {
-		thread_local httplib::Client http_client{config.host, config.port};
-		// wait until the time to send the request arrives
-		std::this_thread::sleep_until(client_pool.start_time + std::chrono::seconds(req.timestamp));
-
-		// send request
-		if (req.operation == Operation::OP_GET) {
-			http_client.Get(std::string("/").append(req.key));
-		}
-		if (req.operation == Operation::OP_SET) {
-			http_client.Post(std::string("/").append(req.key), data_source.data(), req.value_size,
-							 "application/octet-stream");
-		}
-	});
-	client_pool.start();
-
-	Trace_producer trace_producer{config.trace_file};
-	trace_producer.attach_request_buffer(request_buffer);
-	if (!trace_producer.start()) {
-		std::cout << "Unable to open trace file: " << config.trace_file << "\n";
-	}
-
-	// close the queue to notify clients so that they do not get stuck waiting for new requests
-	request_buffer.close();
 
 	return EXIT_SUCCESS;
 }
