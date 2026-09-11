@@ -10,9 +10,7 @@ template<typename T> class Bounded_queue {
 public:
 	explicit Bounded_queue(size_t capacity): _capacity{capacity}, _closed{false} {}
 	Bounded_queue& operator=(Bounded_queue&) = delete;
-	Bounded_queue(Bounded_queue&&) = delete;
 	Bounded_queue& operator=(const Bounded_queue&) = delete;
-	Bounded_queue& operator=(Bounded_queue&&) = delete;
 
 	void push(const T& value)
 	{
