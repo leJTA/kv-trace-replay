@@ -46,22 +46,21 @@ int main(int argc, char* argv[])
 	}
 
 	Request_buffer request_buffer{config.buffer_size};
-	thread_local std::unique_ptr<httplib::Client> http_client;
 
 	Client_pool client_pool{config.nthreads};
 	client_pool.attach_request_buffer(request_buffer);
 	client_pool.set_request_handler([&](const Request& req) {
+		thread_local httplib::Client http_client{config.host, config.port};
 		// wait until the time to send the request arrives
-		http_client = std::make_unique<httplib::Client>(config.host, config.port);
 		std::this_thread::sleep_until(client_pool.start_time + std::chrono::seconds(req.timestamp));
 
 		// send request
 		if (req.operation == Operation::OP_GET) {
-			http_client->Get(std::string("/").append(req.key));
+			http_client.Get(std::string("/").append(req.key));
 		}
 		if (req.operation == Operation::OP_SET) {
-			http_client->Post(std::string("/").append(req.key), data_source.data(), req.value_size,
-							  "application/octet-stream");
+			http_client.Post(std::string("/").append(req.key), data_source.data(), req.value_size,
+							 "application/octet-stream");
 		}
 	});
 	client_pool.start();
@@ -69,9 +68,10 @@ int main(int argc, char* argv[])
 	Trace_producer trace_producer{config.trace_file};
 	trace_producer.attach_request_buffer(request_buffer);
 	if (!trace_producer.start()) {
-		std::cout << "Unable to open file: " << config.trace_file << "\n";
+		std::cout << "Unable to open trace file: " << config.trace_file << "\n";
 	}
 
+	// close the queue to notify clients so that they do not get stuck waiting for new requests
 	request_buffer.close();
 
 	return EXIT_SUCCESS;
