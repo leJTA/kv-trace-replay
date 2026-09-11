@@ -27,6 +27,6 @@ Command line options:
 
 ## Trace format
 
-It supports [Twitter](https://github.com/cacheMon/cache_dataset#twitter-twemcache-request-traces) trace file formats.
+It supports [Twitter](https://github.com/cacheMon/cache_dataset#twitter-twemcache-request-traces) trace file format.
 
 <!-- [Meta](https://github.com/cacheMon/cache_dataset#meta-key-value-cache-traces). -->
