@@ -34,7 +34,9 @@ int main(int argc, char* argv[])
 	KV_trace::Trace_player player{config.trace_file, config.data_file, config.host,
 								  config.port,		 config.nthreads,  config.buffer_size};
 
-	if (!player.run()) {
+	std::error_code ec = player.run();
+	if (ec) {
+		std::cout << ec;
 		return EXIT_FAILURE;
 	}
 

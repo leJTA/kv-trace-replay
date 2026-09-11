@@ -4,6 +4,7 @@
 #include <string>
 
 #include "request.hpp"
+#include "system_error"
 
 namespace KV_trace {
 	class Trace_producer {
@@ -17,11 +18,11 @@ namespace KV_trace {
 			_request_buffer = &request_buffer;
 		}
 
-		bool start()
+		std::error_code start()
 		{
 			std::ifstream trace{_trace_file};
 			if (!trace.is_open()) {
-				return false;
+				return Trace_error::trace_file_open_failed;
 			}
 
 			std::string line;
@@ -30,7 +31,7 @@ namespace KV_trace {
 			}
 			trace.close();
 
-			return true;
+			return {};
 		}
 
 	private:

@@ -11,6 +11,7 @@
 #include "config.hpp"
 #include "data_source.hpp"
 #include "request.hpp"
+#include "trace_error.hpp"
 #include "trace_producer.hpp"
 
 static constexpr size_t _max_data_size = 256 * 1024; // 256 KB
@@ -24,10 +25,12 @@ namespace KV_trace {
 			  _request_buffer{buffer_size}, _trace_producer{trace_file}, _client_pool{nthreads}
 		{}
 
-		bool run()
+		std::error_code run()
 		{
-			if (!_data_source.load(_data_file)) {
-				return false;
+			std::error_code ec;
+			ec = _data_source.load(_data_file);
+			if (ec) {
+				return ec;
 			}
 
 			_trace_producer.attach_request_buffer(_request_buffer);
@@ -36,15 +39,15 @@ namespace KV_trace {
 			_client_pool.set_request_handler([this](const Request& r) { HTTP_request_handler(r); });
 			_client_pool.start();
 
-			if (!_trace_producer.start()) {
-				std::cout << "Unable to open trace file \n";
-				return false;
+			ec = _trace_producer.start();
+			if (ec) {
+				return ec;
 			}
 
 			// close the queue to notify clients so that they do not get stuck waiting for new
 			// requests
 			_request_buffer.close();
-			return true;
+			return {};
 		}
 
 	private:
@@ -64,10 +67,10 @@ namespace KV_trace {
 										  std::chrono::seconds(req.timestamp));
 
 			// send request
-			if (req.operation == Operation::OP_GET) {
+			if (req.operation == Operation::op_get) {
 				http_client.Get(std::string("/").append(req.key));
 			}
-			else if (req.operation == Operation::OP_SET) {
+			else if (req.operation == Operation::op_set) {
 				http_client.Post(std::string("/").append(req.key), _data_source.data(),
 								 req.value_size, "application/octet-stream");
 			}
@@ -79,10 +82,10 @@ namespace KV_trace {
 		// 	memcached_server_add(memc.get(), _host.c_str(), _port);
 		// 	size_t len = req.value_size;
 		// 	uint32_t flags;
-		// 	if (req.operation == Operation::OP_GET) {
+		// 	if (req.operation == Operation::op_get) {
 		// 		char* val = memcached_get(memc.get(), req.key, req.key_size, &len, &flags, NULL);
 		// 	}
-		// 	else if (req.operation == Operation::OP_SET) {
+		// 	else if (req.operation == Operation::op_set) {
 		// 		memcached_set(memc.get(), req.key, req.key_size, _data_source.data(),
 		// 					  req.value_size, 0, 0);
 		// 	}

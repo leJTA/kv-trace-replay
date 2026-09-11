@@ -37,6 +37,7 @@ set(HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/client_pool.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/data_source.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_player.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_error.hpp
 )
 
 add_executable(kv_trace_replay ${SRCS} ${HDRS})

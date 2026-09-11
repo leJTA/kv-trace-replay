@@ -15,10 +15,10 @@
 
 namespace KV_trace {
 	enum class Operation {
-		OP_GET,
-		OP_SET,
-		OP_DELETE,
-		OP_UNSUPPORTED
+		op_get,
+		op_set,
+		op_delete,
+		op_unsupported
 	};
 
 	struct Request {
@@ -35,16 +35,16 @@ namespace KV_trace {
 	static Operation _op_from_str(std::string_view op)
 	{
 		if (op == "get") {
-			return Operation::OP_GET;
+			return Operation::op_get;
 		}
 		else if (op == "set") {
-			return Operation::OP_SET;
+			return Operation::op_set;
 		}
 		else if (op == "deleted") {
-			return Operation::OP_DELETE;
+			return Operation::op_delete;
 		}
 		else {
-			return Operation::OP_UNSUPPORTED;
+			return Operation::op_unsupported;
 		}
 	}
 
