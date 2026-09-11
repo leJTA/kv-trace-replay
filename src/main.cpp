@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 
 	std::error_code ec = player.run();
 	if (ec) {
-		std::cout << ec;
+		std::cout << ec.message() << "\n";
 		return EXIT_FAILURE;
 	}
 

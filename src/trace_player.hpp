@@ -41,6 +41,7 @@ namespace KV_trace {
 
 			ec = _trace_producer.start();
 			if (ec) {
+				_request_buffer.close();
 				return ec;
 			}
 

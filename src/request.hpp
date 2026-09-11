@@ -73,7 +73,7 @@ namespace KV_trace {
 		req.operation = _op_from_str(fields[5].c_str());
 		std::from_chars(fields[6].data(), fields[6].data() + fields[6].size(), req.ttl);
 
-		std::cout << req.timestamp << " " << req.key << ", " << fields[5] << " " << req.value_size
+		std::cout << req.timestamp << " " << req.key << " " << fields[5] << " " << req.value_size
 				  << "\n";
 
 		return req;

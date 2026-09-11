@@ -24,7 +24,7 @@ namespace KV_trace {
 			case Trace_error::data_file_open_failed:
 				return "unable to open data file";
 			case Trace_error::data_file_too_small:
-				return "data source file is too small";
+				return "data file is too small";
 			default:
 				return "unknown error";
 			}
