@@ -22,7 +22,7 @@ Command line options:
   -h [ --host ] arg (=localhost) host address
   -p [ --port ] arg (=9000)      host port
   -t [ --threads ] arg (=4)      number of worker threads
-  --buffer-size arg (=4096)      size of the request buffer
+  -b [ --buffer-size ] arg (=4096) size of the request buffer
 ```
 
 ## Trace format
