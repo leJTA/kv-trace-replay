@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <memory>
+#include <print>
 #include <string_view>
 
 #include <libmemcached/memcached.h>
@@ -36,7 +37,8 @@ namespace KV_trace {
 			_trace_producer.attach_request_buffer(_request_buffer);
 			_client_pool.attach_request_buffer(_request_buffer);
 
-			_client_pool.set_request_handler([this](const Request& r) { HTTP_request_handler(r); });
+			_client_pool.set_request_handler(
+				[this](const Request& r) { Console_request_handler(r); });
 			_client_pool.start();
 
 			ec = _trace_producer.start();
@@ -59,6 +61,22 @@ namespace KV_trace {
 		Request_buffer _request_buffer;
 		Trace_producer _trace_producer;
 		Client_pool _client_pool;
+
+		void Console_request_handler(const Request& req)
+		{
+			// wait until the time to send the request arrives
+			std::this_thread::sleep_until(_client_pool.start_time +
+										  std::chrono::seconds(req.timestamp));
+			
+										  // send request
+			if (req.operation == Operation::op_get) {
+				std::println("[{}] GET {}", req.timestamp, req.key);
+			}
+			else if (req.operation == Operation::op_set) {
+				std::println("[{}] SET {} [size = {}, ttl = {}]", req.timestamp, req.key,
+							 req.value_size, req.ttl);
+			}
+		}
 
 		void HTTP_request_handler(const Request& req)
 		{
