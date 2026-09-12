@@ -16,7 +16,7 @@ void Config::parse_command_line(int argc, const char* const argv[])
 			("host,h", po::value<std::string>()->default_value("localhost"), "host address")
 			("port,p", po::value<int>()->default_value(9000), "host port")
 			("threads,t", po::value<int>()->default_value(4), "number of worker threads")
-			("buffer-size", po::value<size_t>()->default_value(4096), "size of the request buffer")
+			("buffer-size,b", po::value<size_t>()->default_value(4096), "size of the request buffer")
 		;
 		// clang-format on
 		po::variables_map vm;
