@@ -31,8 +31,7 @@ int main(int argc, char* argv[])
 	// std::cout << "[INFO] Request Buffer size : " << config.buffer_size << "\n";
 	// std::cout << "[INFO] ----------------------------------------------------------------\n\n";
 
-	KV_trace::Trace_player player{config.trace_file, config.data_file, config.host,
-								  config.port,		 config.nthreads,  config.buffer_size};
+	KV_trace::Trace_player player{config};
 
 	std::error_code ec = player.run();
 	if (ec) {

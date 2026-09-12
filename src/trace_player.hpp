@@ -19,10 +19,10 @@ static constexpr size_t _max_data_size = 256 * 1024; // 256 KB
 namespace KV_trace {
 	class Trace_player {
 	public:
-		Trace_player(const std::string& trace_file, const std::string& data_file,
-					 const std::string& host, int port, int nthreads, size_t buffer_size)
-			: _host{host}, _port{port}, _data_file{data_file}, _data_source{_max_data_size},
-			  _request_buffer{buffer_size}, _trace_producer{trace_file}, _client_pool{nthreads}
+		explicit Trace_player(const Config& config)
+			: _host{config.host}, _port{config.port}, _data_file{config.data_file},
+			  _data_source{_max_data_size}, _request_buffer{config.buffer_size},
+			  _trace_producer{config.trace_file}, _client_pool{config.nthreads}
 		{}
 
 		std::error_code run()
