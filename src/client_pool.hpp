@@ -10,16 +10,15 @@
 #include "request.hpp"
 
 namespace KV_trace {
+	using Request_handler = std::function<void(const Request&)>;
+
 	class Client_pool {
 	public:
 		std::chrono::steady_clock::time_point start_time;
 
 		explicit Client_pool(int pool_size): _request_buffer{nullptr}, _pool_size{pool_size} {}
 
-		void set_request_handler(std::function<void(const Request&)> handler)
-		{
-			_request_handler = handler;
-		}
+		void set_request_handler(Request_handler handler) { _request_handler = handler; }
 		void attach_request_buffer(Request_buffer& request_buffer)
 		{
 			_request_buffer = &request_buffer;
@@ -38,7 +37,7 @@ namespace KV_trace {
 		}
 
 	private:
-		std::function<void(const Request&)> _request_handler;
+		Request_handler _request_handler;
 		Request_buffer* _request_buffer;
 		std::vector<std::jthread> _pool;
 		int _pool_size;
