@@ -38,7 +38,7 @@ namespace KV_trace {
 			_client_pool.attach_request_buffer(_request_buffer);
 
 			_client_pool.set_request_handler(
-				[this](const Request& r) { Console_request_handler(r); });
+				[this](const Request& r) { console_request_handler(r); });
 			_client_pool.start();
 
 			ec = _trace_producer.start();
@@ -62,7 +62,7 @@ namespace KV_trace {
 		Trace_producer _trace_producer;
 		Client_pool _client_pool;
 
-		void Console_request_handler(const Request& req)
+		void console_request_handler(const Request& req)
 		{
 			// wait until the time to send the request arrives
 			std::this_thread::sleep_until(_client_pool.start_time +
@@ -78,7 +78,7 @@ namespace KV_trace {
 			}
 		}
 
-		void HTTP_request_handler(const Request& req)
+		void http_request_handler(const Request& req)
 		{
 			thread_local httplib::Client http_client{_host, _port};
 			// wait until the time to send the request arrives
@@ -95,7 +95,7 @@ namespace KV_trace {
 			}
 		}
 
-		// void Memcached_request_handler(const Request& req)
+		// void memcached_request_handler(const Request& req)
 		// {
 		// 	thread_local auto memc = std::unique_ptr<memcached_st>(memcached_create(nullptr));
 		// 	memcached_server_add(memc.get(), _host.c_str(), _port);
