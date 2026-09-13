@@ -69,8 +69,7 @@ namespace KV_trace {
 							 _client_pool.statistics()->percentile(90),
 							 _client_pool.statistics()->percentile(95),
 							 _client_pool.statistics()->percentile(99),
-							 _client_pool.statistics()->percentile(99.9),
-							 _client_pool.statistics()->percentile(99));
+							 _client_pool.statistics()->percentile(99.9));
 			}
 
 			return {};
