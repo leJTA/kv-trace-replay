@@ -12,6 +12,12 @@ FetchContent_Declare(
    GIT_TAG v0.54.1
 )
 FetchContent_MakeAvailable(httplib)
+FetchContent_Declare(
+   hdr_histogram
+   GIT_REPOSITORY https://github.com/HdrHistogram/HdrHistogram_c.git
+   GIT_TAG 0.11.10
+)
+FetchContent_MakeAvailable(hdr_histogram)
 
 # build options
 if (NOT CMAKE_BUILD_TYPE)
@@ -48,6 +54,7 @@ target_link_libraries(kv_trace_replay
         Boost::program_options
         Threads::Threads
         memcached
+        hdr_histogram::hdr_histogram_static
 )
 
 # target_link_options(kv_trace_replay PRIVATE -"static")
