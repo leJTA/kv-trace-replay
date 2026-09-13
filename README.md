@@ -16,13 +16,14 @@ Usage :
 # ./build/bin/kv_trace_replay --help
 
 Command line options:
-  --help                         print this help message
-  -f [ --trace-file ] arg        trace file
-  -d [ --data-file ] arg         data source file
-  -h [ --host ] arg (=localhost) host address
-  -p [ --port ] arg (=9000)      host port
-  -t [ --threads ] arg (=4)      number of worker threads
+  --help                           print this help message
+  -f [ --trace-file ] arg          trace file
+  -d [ --data-file ] arg           data source file
+  -h [ --host ] arg (=localhost)   host address
+  -p [ --port ] arg (=9000)        host port
+  -t [ --threads ] arg (=4)        number of worker threads
   -b [ --buffer-size ] arg (=4096) size of the request buffer
+  -o [ --output-csv ] arg          export the statistics to the given csv file
 ```
 
 ## Trace format
