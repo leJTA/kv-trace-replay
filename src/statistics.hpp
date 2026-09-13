@@ -24,6 +24,8 @@ namespace KV_trace {
 		{
 			std::lock_guard<std::mutex> lock{_mut};
 			hdr_add(_time_histogram, from._time_histogram);
+			_hits += from._hits;
+			_misses += from._misses;
 		}
 
 		int64_t percentile(double percentile) const

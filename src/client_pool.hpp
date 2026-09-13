@@ -37,6 +37,7 @@ namespace KV_trace {
 					while (auto request = this->_request_buffer->pop()) [[likely]] {
 						this->_request_handler(*request);
 					}
+					_total_stats.add(_stats);
 				});
 			}
 		}
