@@ -67,8 +67,8 @@ namespace KV_trace {
 			// wait until the time to send the request arrives
 			std::this_thread::sleep_until(_client_pool.start_time +
 										  std::chrono::seconds(req.timestamp));
-			
-										  // send request
+
+			// console print request
 			if (req.operation == Operation::op_get) {
 				std::println("[{}] GET {}", req.timestamp, req.key);
 			}
@@ -85,7 +85,7 @@ namespace KV_trace {
 			std::this_thread::sleep_until(_client_pool.start_time +
 										  std::chrono::seconds(req.timestamp));
 
-			// send request
+			// send http request
 			if (req.operation == Operation::op_get) {
 				http_client.Get(std::string("/").append(req.key));
 			}
