@@ -35,6 +35,7 @@ namespace KV_trace {
 		int64_t mean() const { return hdr_mean(_time_histogram); }
 		int64_t min() const { return hdr_min(_time_histogram); }
 		int64_t max() const { return hdr_max(_time_histogram); }
+		int64_t total_count() const { return _time_histogram->total_count; }
 		int32_t hits() const { return _hits; }
 		int32_t misses() const { return _misses; }
 
