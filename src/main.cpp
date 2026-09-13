@@ -1,5 +1,5 @@
 #include <fstream>
-#include <iostream>
+#include <print>
 #include <string_view>
 
 #include "httplib.h"
@@ -12,12 +12,12 @@ int main(int argc, char* argv[])
 	config.parse_command_line(argc, argv);
 
 	if (config.error) {
-		std::cout << config.error_msg << "\n";
+		std::println(stderr, "{}", config.error_msg);
 		return EXIT_FAILURE;
 	}
 
 	if (config.help) {
-		std::cout << config.help_msg << "\n";
+		std::print("{}", config.help_msg);
 		return EXIT_SUCCESS;
 	}
 
@@ -38,6 +38,15 @@ int main(int argc, char* argv[])
 		std::cout << ec.message() << "\n";
 		return EXIT_FAILURE;
 	}
+
+	std::println(
+		"total requests = {}, min = {} ms, max = {} ms, avg = {} ms, median = {} ms, p90 = {} ms, "
+		"p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
+		player.statistics()->total_count(), player.statistics()->min() / 1000.0,
+		player.statistics()->max() / 1000.0, player.statistics()->mean() / 1000.0,
+		player.statistics()->percentile(50) / 1000.0, player.statistics()->percentile(90) / 1000.0,
+		player.statistics()->percentile(95) / 1000.0, player.statistics()->percentile(99) / 1000.0,
+		player.statistics()->percentile(99.9) / 1000.0);
 
 	return EXIT_SUCCESS;
 }

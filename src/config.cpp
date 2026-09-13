@@ -17,6 +17,7 @@ void Config::parse_command_line(int argc, const char* const argv[])
 			("port,p", po::value<int>()->default_value(9000), "host port")
 			("threads,t", po::value<int>()->default_value(4), "number of worker threads")
 			("buffer-size,b", po::value<size_t>()->default_value(4096), "size of the request buffer")
+			("output-csv,o", po::value<std::string>(), "export the statistics to the given csv file")
 		;
 		// clang-format on
 		po::variables_map vm;
@@ -38,6 +39,9 @@ void Config::parse_command_line(int argc, const char* const argv[])
 		port = vm["port"].as<int>();
 		nthreads = vm["threads"].as<int>();
 		buffer_size = vm["buffer-size"].as<size_t>();
+		if (vm.contains("output-csv")) {
+			output_csv = vm["output-csv"].as<std::string>();
+		}
 	}
 	catch (std::exception& e) {
 		error = true;

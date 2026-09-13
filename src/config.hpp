@@ -16,6 +16,7 @@ struct Config {
 	int port;
 	int nthreads;
 	size_t buffer_size;
+	std::string output_csv;
 };
 
 #endif // __CONFIG_HPP__

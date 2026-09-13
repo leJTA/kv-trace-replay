@@ -42,6 +42,16 @@ namespace KV_trace {
 			}
 		}
 
+		void wait()
+		{
+			for (auto& client : _pool) {
+				client.join();
+			}
+		}
+
+		// Statistics
+		Statistics* statistics() const { return &_total_stats; }
+
 		// Request Handlers
 		void console_request_handler(const Request& req)
 		{
@@ -95,8 +105,8 @@ namespace KV_trace {
 		// }
 
 	private:
-		static thread_local Statistics _stats;
-		static Statistics _total_stats;
+		inline static thread_local Statistics _stats;
+		inline static Statistics _total_stats;
 
 		Request_handler _request_handler;
 		Request_buffer* _request_buffer;
