@@ -16,8 +16,6 @@ namespace KV_trace {
 
 	class Client_pool {
 	public:
-		std::chrono::steady_clock::time_point start_time;
-
 		Client_pool(int pool_size, const std::string& host, int port)
 			: _request_buffer{nullptr}, _pool_size{pool_size}, _host{host}, _port{port}
 		{}
@@ -31,7 +29,7 @@ namespace KV_trace {
 
 		void start()
 		{
-			start_time = std::chrono::steady_clock::now();
+			_start_time = std::chrono::steady_clock::now();
 			for (int i = 0; i < _pool_size; ++i) {
 				_pool.emplace_back([this]() {
 					while (auto request = this->_request_buffer->pop()) [[likely]] {
@@ -56,7 +54,7 @@ namespace KV_trace {
 		void console_request_handler(const Request& req)
 		{
 			// wait until the time to send the request arrives
-			std::this_thread::sleep_until(start_time + std::chrono::seconds(req.timestamp));
+			std::this_thread::sleep_until(_start_time + std::chrono::seconds(req.timestamp));
 
 			auto begin = std::chrono::steady_clock::now();
 			// console print request
@@ -76,7 +74,7 @@ namespace KV_trace {
 		{
 			thread_local httplib::Client http_client{_host, _port};
 			// wait until the time to send the request arrives
-			std::this_thread::sleep_until(start_time + std::chrono::seconds(req.timestamp));
+			std::this_thread::sleep_until(_start_time + std::chrono::seconds(req.timestamp));
 
 			// send http request
 			if (req.operation == Operation::op_get) {
@@ -111,6 +109,7 @@ namespace KV_trace {
 		Request_handler _request_handler;
 		Request_buffer* _request_buffer;
 		Data_source* _data_source;
+		std::chrono::steady_clock::time_point _start_time;
 		std::vector<std::jthread> _pool;
 		int _pool_size;
 		std::string _host;
