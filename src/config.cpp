@@ -49,7 +49,7 @@ namespace KV_trace {
 				("port,p", po::value<int>()->default_value(9000), "host port")
 				("protocol,x", po::value<Protocol>(&protocol)->default_value(Protocol::http),
 					"request protocol: http, tcp or console")
-				("threads,t", po::value<int>()->default_value(4), "number of worker threads")
+				("threads,t", po::value<int>()->default_value(4), "number of sender threads")
 				("buffer-size,b", po::value<size_t>()->default_value(4096), "size of the request buffer")
 				("output-csv,o", po::value<std::string>(), "export the statistics to the given csv file")
 			;
