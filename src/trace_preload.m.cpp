@@ -10,8 +10,9 @@
 #include "data_source.hpp"
 #include "request.hpp"
 
-namespace KV_trace {
+constexpr size_t max_value_size = 512 * 1024; // 512 KB
 
+namespace KV_trace {
 	struct Config {
 		std::string data_file;
 		std::string trace_file;
@@ -54,7 +55,6 @@ namespace KV_trace {
 
 		return config;
 	}
-
 } // namespace KV_trace
 
 int main(int argc, char* argv[])
@@ -72,7 +72,6 @@ int main(int argc, char* argv[])
 	}
 
 	// Load the data source
-	std::size_t max_value_size = 256 * 1024;
 	KV_trace::Data_source data_source{max_value_size};
 	if (const auto ec = data_source.load(config.data_file)) {
 		std::println("{}", ec.message());
