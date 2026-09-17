@@ -1,5 +1,5 @@
-#ifndef __CLIENT_POOL_HPP__
-#define __CLIENT_POOL_HPP__
+#ifndef __SENDER_POOL_HPP__
+#define __SENDER_POOL_HPP__
 
 #include <chrono>
 #include <functional>
@@ -21,9 +21,9 @@ namespace KV_trace {
 		console
 	};
 
-	class Client_pool {
+	class Sender_pool {
 	public:
-		Client_pool(int pool_size, const std::string& host, int port, Protocol protocol)
+		Sender_pool(int pool_size, const std::string& host, int port, Protocol protocol)
 			: _request_buffer{nullptr}, _pool_size{pool_size}, _host{host}, _port{port},
 			  _protocol{protocol}
 		{
@@ -151,4 +151,4 @@ namespace KV_trace {
 	};
 } // namespace KV_trace
 
-#endif // __CLIENT_POOL_HPP__
+#endif // __SENDER_POOL_HPP__

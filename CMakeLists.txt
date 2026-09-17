@@ -42,7 +42,7 @@ set(TRACE_REPLAY_HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/request.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/bounded_queue.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_producer.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/client_pool.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sender_pool.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/data_source.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_player.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_error.hpp

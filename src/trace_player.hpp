@@ -6,10 +6,10 @@
 #include <print>
 #include <string_view>
 
-#include "client_pool.hpp"
 #include "config.hpp"
 #include "data_source.hpp"
 #include "request.hpp"
+#include "sender_pool.hpp"
 #include "trace_error.hpp"
 #include "trace_producer.hpp"
 
@@ -21,7 +21,7 @@ namespace KV_trace {
 		explicit Trace_player(const Config& config)
 			: _data_file{config.data_file}, _data_source{_max_data_size},
 			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file},
-			  _client_pool{config.nthreads, config.host, config.port, config.protocol},
+			  _sender_pool{config.nthreads, config.host, config.port, config.protocol},
 			  _output_csv{config.output_csv}
 		{}
 
@@ -34,9 +34,9 @@ namespace KV_trace {
 			}
 
 			_trace_producer.attach_request_buffer(_request_buffer);
-			_client_pool.set_data_source(&_data_source);
-			_client_pool.attach_request_buffer(&_request_buffer);
-			_client_pool.start();
+			_sender_pool.set_data_source(&_data_source);
+			_sender_pool.attach_request_buffer(&_request_buffer);
+			_sender_pool.start();
 
 			ec = _trace_producer.start();
 			if (ec) {
@@ -47,7 +47,7 @@ namespace KV_trace {
 			// close the queue to notify clients so that they do not get stuck waiting for new
 			// requests
 			_request_buffer.close();
-			_client_pool.wait();
+			_sender_pool.wait();
 
 			if (!_output_csv.empty()) {
 				std::ofstream csv{_output_csv, std::ios::app};
@@ -56,26 +56,26 @@ namespace KV_trace {
 				}
 				std::println(csv, "requests,min,max,mean,median,p90,p95,p99,p99.9");
 				std::println(
-					csv, "{},{},{},{},{},{},{},{},{}", _client_pool.statistics()->total_count(),
-					_client_pool.statistics()->min(), _client_pool.statistics()->max(),
-					_client_pool.statistics()->mean(), _client_pool.statistics()->percentile(50),
-					_client_pool.statistics()->percentile(90),
-					_client_pool.statistics()->percentile(95),
-					_client_pool.statistics()->percentile(99),
-					_client_pool.statistics()->percentile(99.9));
+					csv, "{},{},{},{},{},{},{},{},{}", _sender_pool.statistics()->total_count(),
+					_sender_pool.statistics()->min(), _sender_pool.statistics()->max(),
+					_sender_pool.statistics()->mean(), _sender_pool.statistics()->percentile(50),
+					_sender_pool.statistics()->percentile(90),
+					_sender_pool.statistics()->percentile(95),
+					_sender_pool.statistics()->percentile(99),
+					_sender_pool.statistics()->percentile(99.9));
 			}
 
 			return {};
 		}
 
-		Statistics* statistics() const { return _client_pool.statistics(); }
+		Statistics* statistics() const { return _sender_pool.statistics(); }
 
 	private:
 		std::string _data_file;
 		Data_source _data_source;
 		Request_buffer _request_buffer;
 		Trace_producer _trace_producer;
-		Client_pool _client_pool;
+		Sender_pool _sender_pool;
 		std::string _output_csv;
 	};
 } // namespace KV_trace

@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "client_pool.hpp"
+#include "sender_pool.hpp"
 
 namespace KV_trace {
 	struct Config {

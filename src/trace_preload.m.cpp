@@ -110,9 +110,9 @@ int main(int argc, char* argv[])
 			return EXIT_FAILURE;
 		}
 
-        if (config.verbose) {
-            std::println("key = '{}' size = {}", key, request.value_size);
-        }
+		if (config.verbose) {
+			std::println("key = '{}' size = {}", key, request.value_size);
+		}
 
 		++inserted;
 		total_size += request.value_size;
