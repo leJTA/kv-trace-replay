@@ -19,21 +19,19 @@ int main(int argc, char* argv[])
 		return EXIT_SUCCESS;
 	}
 
-	// std::cout << "[INFO] ----------------------------------------------------------------\n";
-	// std::cout << "[INFO] Key-Value Trace Player\n";
-	// std::cout << "[INFO] ----------------------------------------------------------------\n";
-	// std::cout << "[INFO] Trace file path     : " << config.trace_file << "\n";
-	// std::cout << "[INFO] Data file path      : " << config.data_file << "\n";
-	// std::cout << "[INFO] Host & port         : " << config.host << ":" << config.port << "\n";
-	// std::cout << "[INFO] Threads             : " << config.nthreads << "\n";
-	// std::cout << "[INFO] Request Buffer size : " << config.buffer_size << "\n";
-	// std::cout << "[INFO] ----------------------------------------------------------------\n\n";
+	std::println("----------------------------------------------------------------");
+	std::println("Trace file path     : {}", config.trace_file);
+	std::println("Data file path      : {}", config.data_file);
+	std::println("Host & port         : {}", config.host);
+	std::println("Threads             : {}", config.nthreads);
+	std::println("Request Buffer size : {}", config.buffer_size);
+	std::println("-----------------------------------------------------------------");
 
 	KV_trace::Trace_player player{config};
 
 	std::error_code ec = player.run();
 	if (ec) {
-		std::cout << ec.message() << "\n";
+		std::println("{}", ec.message());
 		return EXIT_FAILURE;
 	}
 
