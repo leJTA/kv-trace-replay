@@ -30,13 +30,12 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS program_options)
 
-set(SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+set(TRACE_REPLAY_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_replay.m.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/config.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/request.cpp
 )
-
-set(HDRS
+set(TRACE_REPLAY_HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/config.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/request.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/bounded_queue.hpp
@@ -47,7 +46,17 @@ set(HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_error.hpp
 )
 
-add_executable(kv_trace_replay ${SRCS} ${HDRS})
+set(TRACE_PRELOAD_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_preload.m.cpp
+)
+set(TRACE_PRELOAD_HDRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/request.hpp
+)
+
+add_executable(kv_trace_replay ${TRACE_REPLAY_SRCS} ${TRACE_REPLAY_HDRS})
+add_executable(kv_trace_preload ${TRACE_PRELOAD_SRCS} ${TRACE_PRELOAD_HDRS}
+    
+)
 
 target_link_libraries(kv_trace_replay
     PRIVATE
@@ -55,6 +64,11 @@ target_link_libraries(kv_trace_replay
         Boost::program_options
         Threads::Threads
         hdr_histogram::hdr_histogram_static
+)
+
+target_link_libraries(kv_trace_preload
+    PRIVATE
+        Boost::program_options
 )
 
 # target_link_options(kv_trace_replay PRIVATE -"static")
