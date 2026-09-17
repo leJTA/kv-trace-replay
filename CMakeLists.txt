@@ -19,6 +19,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(hdr_histogram)
 
+find_package(RocksDB REQUIRED)
+
 # build options
 if (NOT CMAKE_BUILD_TYPE)
    message(STATUS "CMAKE_BUILD_TYPE not specified. Defaulting to 'Release'.")
@@ -48,6 +50,7 @@ set(TRACE_REPLAY_HDRS
 
 set(TRACE_PRELOAD_SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_preload.m.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/request.cpp
 )
 set(TRACE_PRELOAD_HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/request.hpp
@@ -69,6 +72,7 @@ target_link_libraries(kv_trace_replay
 target_link_libraries(kv_trace_preload
     PRIVATE
         Boost::program_options
+        RocksDB::rocksdb
 )
 
 # target_link_options(kv_trace_replay PRIVATE -"static")
