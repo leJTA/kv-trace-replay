@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
 		std::println("key = '{}' size = {}", key, request.value_size);
 
 		++inserted;
-		total_size += request.key_size;
+		total_size += request.value_size;
 	}
 
 	delete db;
@@ -144,7 +144,8 @@ int main(int argc, char* argv[])
 	std::println("Preload completed");
 	std::println("---------------------------------");
 	std::println("Maximum value size: {}", max_value_size);
-	std::println("Inserted requests: {}", inserted);
+	std::println("Total value size  : {}", total_size);
+	std::println("Inserted requests : {}", inserted);
 
 	return EXIT_SUCCESS;
 }
