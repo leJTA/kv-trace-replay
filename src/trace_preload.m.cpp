@@ -31,7 +31,7 @@ namespace KV_trace {
             ("help,h","print this help message")
             ("data-file,d", po::value<std::string>(&config.data_file)->required(), 
                 "data source file")
-            ("trace-file,t", po::value<std::string>(&config.trace_file)->required(), "trace file")
+            ("trace-file,f", po::value<std::string>(&config.trace_file)->required(), "trace file")
             ("db-path,b", po::value<std::string>(&config.db_path)->required(), 
                 "RocksDB database path")
             ("verbose,v", po::bool_switch(&config.verbose), "print requests while preloading");

@@ -34,7 +34,7 @@ Trace preload usage :
 Command line options:
   -h [ --help ]           print this help message
   -d [ --data-file ] arg  data source file
-  -t [ --trace-file ] arg trace file
+  -f [ --trace-file ] arg trace file
   -b [ --db-path ] arg    RocksDB database path
   -v [ --verbose ]        print requests while preloading
 ```
