@@ -1,13 +1,13 @@
 #include "request.hpp"
 
 #include <charconv>
-#include <ranges>
 #include <cstring>
+#include <ranges>
 #include <string_view>
 #include <vector>
 
 namespace KV_trace {
-    static Operation _op_from_str(std::string_view op)
+	static Operation _op_from_str(std::string_view op)
 	{
 		if (op == "get") {
 			return Operation::op_get;

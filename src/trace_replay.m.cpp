@@ -2,13 +2,11 @@
 #include <print>
 #include <string_view>
 
-#include "httplib.h"
-
 #include "trace_player.hpp"
 
 int main(int argc, char* argv[])
 {
-	Config config;
+	KV_trace::Config config;
 	config.parse_command_line(argc, argv);
 
 	if (config.error) {

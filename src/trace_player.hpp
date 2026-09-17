@@ -6,8 +6,6 @@
 #include <print>
 #include <string_view>
 
-#include <libmemcached/memcached.h>
-
 #include "client_pool.hpp"
 #include "config.hpp"
 #include "data_source.hpp"
@@ -23,7 +21,7 @@ namespace KV_trace {
 		explicit Trace_player(const Config& config)
 			: _data_file{config.data_file}, _data_source{_max_data_size},
 			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file},
-			  _client_pool{config.nthreads, config.host, config.port},
+			  _client_pool{config.nthreads, config.host, config.port, config.protocol},
 			  _output_csv{config.output_csv}
 		{}
 
@@ -38,9 +36,6 @@ namespace KV_trace {
 			_trace_producer.attach_request_buffer(_request_buffer);
 			_client_pool.set_data_source(&_data_source);
 			_client_pool.attach_request_buffer(&_request_buffer);
-
-			_client_pool.set_request_handler(
-				[this](const Request& r) { _client_pool.console_request_handler(r); });
 			_client_pool.start();
 
 			ec = _trace_producer.start();
@@ -60,15 +55,14 @@ namespace KV_trace {
 					return Trace_error::csv_file_open_failed;
 				}
 				std::println(csv, "requests,min,max,mean,median,p90,p95,p99,p99.9");
-				std::println(csv, "{},{},{},{},{},{},{},{},{}",
-							 _client_pool.statistics()->total_count(),
-							 _client_pool.statistics()->min(), _client_pool.statistics()->max(),
-							 _client_pool.statistics()->mean(),
-							 _client_pool.statistics()->percentile(50),
-							 _client_pool.statistics()->percentile(90),
-							 _client_pool.statistics()->percentile(95),
-							 _client_pool.statistics()->percentile(99),
-							 _client_pool.statistics()->percentile(99.9));
+				std::println(
+					csv, "{},{},{},{},{},{},{},{},{}", _client_pool.statistics()->total_count(),
+					_client_pool.statistics()->min(), _client_pool.statistics()->max(),
+					_client_pool.statistics()->mean(), _client_pool.statistics()->percentile(50),
+					_client_pool.statistics()->percentile(90),
+					_client_pool.statistics()->percentile(95),
+					_client_pool.statistics()->percentile(99),
+					_client_pool.statistics()->percentile(99.9));
 			}
 
 			return {};
