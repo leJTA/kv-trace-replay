@@ -33,6 +33,7 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 set(SRCS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/config.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/request.cpp
 )
 
 set(HDRS
@@ -53,7 +54,6 @@ target_link_libraries(kv_trace_replay
         httplib
         Boost::program_options
         Threads::Threads
-        memcached
         hdr_histogram::hdr_histogram_static
 )
 
