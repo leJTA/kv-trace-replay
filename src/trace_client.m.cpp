@@ -128,6 +128,7 @@ public:
 		size_t len;
 		uint32_t flags;
 		char* val = memcached_get(memc, key.c_str(), key.size(), &len, &flags, NULL);
+		std::println("Set value for key : {}", key);
 
 		if (val) { // cache hit
 			value.copy(val, len);
@@ -162,8 +163,8 @@ public:
 
 	bool set(const std::string& key, const std::string& value)
 	{
-		const auto start = std::chrono::steady_clock::now();
 		memcached_st* memc = _memc_client();
+		const auto start = std::chrono::steady_clock::now();
 
 		memcached_set(memc, key.c_str(), key.size(), value.data(), value.length(), 0, 0);
 		const auto status = _db->Put(rocksdb::WriteOptions{}, key, value);
@@ -275,7 +276,17 @@ int main(int argc, char* argv[])
 		res.set_content(value, "application/octet-stream");
 	});
 
-	std::println("trace_client listening on port {} with {} threads", config.port, config.threads);
+	server.Post(R"(/(.+))", [&client](const httplib::Request& req, httplib::Response& res) {
+		const std::string key = req.matches[1];
+		std::string value;
+
+		if (!client.set(key, req.body)) {
+			res.status = 404;
+			return;
+		}
+	});
+
+	std::println("Trace client listening on port {} with {} threads", config.port, config.threads);
 
 	// Register signal handler
 	server_ptr = &server;
