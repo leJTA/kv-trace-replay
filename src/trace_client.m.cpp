@@ -128,7 +128,6 @@ public:
 		size_t len;
 		uint32_t flags;
 		char* val = memcached_get(memc, key.c_str(), key.size(), &len, &flags, NULL);
-		std::println("Set value for key : {}", key);
 
 		if (val) { // cache hit
 			value.copy(val, len);
@@ -194,9 +193,8 @@ private:
 
 		if (!client) {
 			client.reset(memcached_create(nullptr));
-			if (!memcached_server_add(client.get(), _memc_host.c_str(), _memc_port)) {
-				client.reset();
-			}
+			memcached_server_add(client.get(), _memc_host.c_str(), _memc_port);
+			std::println("new memcached client created");
 		}
 		return client.get();
 	}
