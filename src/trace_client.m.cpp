@@ -288,13 +288,13 @@ int main(int argc, char* argv[])
 	}
 
 	constexpr double million = 1'000'000.0;
-	std::println(
-		"requests = {}, min = {} ms, max = {} ms, avg = {} ms, median = {} ms, p90 = {} ms, "
-		"p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
-		statistics.total_count(), statistics.min() / million, statistics.max() / million,
-		statistics.mean() / million, statistics.percentile(50) / million,
-		statistics.percentile(90) / million, statistics.percentile(95) / million,
-		statistics.percentile(99) / million, statistics.percentile(99.9) / million);
+	std::println("requests = {}, hits = {}, misses = {}, min = {} ms, max = {} ms, avg = {} ms, "
+				 "median = {} ms, p90 = {} ms, p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
+				 statistics.total_count(), (ulong)statistics.hits, (ulong)statistics.misses,
+				 statistics.min() / million, statistics.max() / million,
+				 statistics.mean() / million, statistics.percentile(50) / million,
+				 statistics.percentile(90) / million, statistics.percentile(95) / million,
+				 statistics.percentile(99) / million, statistics.percentile(99.9) / million);
 
 	return EXIT_SUCCESS;
 }
