@@ -10,31 +10,32 @@
 namespace KV_trace {
 	class Statistics {
 	public:
-		Statistics()
+		Statistics(): _time_histogram{nullptr, &hdr_close}
 		{
+			hdr_histogram* hist;
 			// min time = 1ns, max time = 60s
-			hdr_init(1, INT64_C(60000000), 3, &_time_histogram);
+			hdr_init(1, INT64_C(60'000'000), 3, &hist);
+			_time_histogram.reset(hist);
 		}
-		~Statistics() { hdr_close(_time_histogram); }
 
-		void record_time(int64_t value) { hdr_record_value(_time_histogram, value); }
+		void record_time(int64_t value) { hdr_record_value(_time_histogram.get(), value); }
 		void add(const Statistics& from)
 		{
 			std::lock_guard<std::mutex> lock{_mut};
-			hdr_add(_time_histogram, from._time_histogram);
+			hdr_add(_time_histogram.get(), from._time_histogram.get());
 		}
 
 		int64_t percentile(double percentile) const
 		{
-			return hdr_value_at_percentile(_time_histogram, percentile);
+			return hdr_value_at_percentile(_time_histogram.get(), percentile);
 		};
-		int64_t mean() const { return hdr_mean(_time_histogram); }
-		int64_t min() const { return hdr_min(_time_histogram); }
-		int64_t max() const { return hdr_max(_time_histogram); }
+		int64_t mean() const { return hdr_mean(_time_histogram.get()); }
+		int64_t min() const { return hdr_min(_time_histogram.get()); }
+		int64_t max() const { return hdr_max(_time_histogram.get()); }
 		int64_t total_count() const { return _time_histogram->total_count; }
 
 	private:
-		struct hdr_histogram* _time_histogram;
+		std::unique_ptr<hdr_histogram, decltype(&hdr_close)> _time_histogram;
 		std::mutex _mut;
 	};
 } // namespace KV_trace
