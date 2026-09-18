@@ -22,7 +22,8 @@ int main(int argc, char* argv[])
 	std::println("----------------------------------------------------------------");
 	std::println("Trace file path     : {}", config.trace_file);
 	std::println("Data file path      : {}", config.data_file);
-	std::println("Host & port         : {}", config.host);
+	std::println("Host & port         : {}:{}", config.host, config.port);
+	// std::println("Protocol            : {}", config.protocol);
 	std::println("Threads             : {}", config.nthreads);
 	std::println("Request Buffer size : {}", config.buffer_size);
 	std::println("-----------------------------------------------------------------");
@@ -35,14 +36,17 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	constexpr double million = 1'000'000.0;
 	std::println(
 		"total requests = {}, min = {} ms, max = {} ms, avg = {} ms, median = {} ms, p90 = {} ms, "
 		"p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
-		player.statistics()->total_count(), player.statistics()->min() / 1000.0,
-		player.statistics()->max() / 1000.0, player.statistics()->mean() / 1000.0,
-		player.statistics()->percentile(50) / 1000.0, player.statistics()->percentile(90) / 1000.0,
-		player.statistics()->percentile(95) / 1000.0, player.statistics()->percentile(99) / 1000.0,
-		player.statistics()->percentile(99.9) / 1000.0);
+		player.statistics()->total_count(), player.statistics()->min() / million,
+		player.statistics()->max() / million, player.statistics()->mean() / million,
+		player.statistics()->percentile(50) / million,
+		player.statistics()->percentile(90) / million,
+		player.statistics()->percentile(95) / million,
+		player.statistics()->percentile(99) / million,
+		player.statistics()->percentile(99.9) / million);
 
 	return EXIT_SUCCESS;
 }

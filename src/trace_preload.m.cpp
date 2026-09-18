@@ -10,7 +10,7 @@
 #include "data_source.hpp"
 #include "request.hpp"
 
-constexpr size_t max_value_size = 512 * 1024; // 512 KB
+constexpr size_t max_value_size = 256 * 1024; // 512 KB
 
 namespace KV_trace {
 	struct Config {
