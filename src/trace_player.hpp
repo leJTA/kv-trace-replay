@@ -22,7 +22,7 @@ namespace KV_trace {
 			: _data_file{config.data_file}, _data_source{_max_data_size},
 			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file},
 			  _sender_pool{config.nthreads, config.host, config.port, config.protocol},
-			  _output_csv{config.output_csv}, _cdf_file{config.output_cdf}
+			  _output_csv{config.output_csv}, _output_cdf{config.output_cdf}
 		{}
 
 		std::error_code run()
@@ -65,8 +65,8 @@ namespace KV_trace {
 					_sender_pool.statistics()->percentile(99.9));
 			}
 
-			if (!_cdf_file.empty()) {
-				std::ofstream file{_cdf_file, std::ios::trunc};
+			if (!_output_cdf.empty()) {
+				std::ofstream file{_output_cdf, std::ios::trunc};
 				if (!file.is_open()) {
 					return Trace_error::cdf_file_open_failed;
 				}
@@ -88,7 +88,7 @@ namespace KV_trace {
 		Trace_producer _trace_producer;
 		Sender_pool _sender_pool;
 		std::string _output_csv;
-		std::string _cdf_file;
+		std::string _output_cdf;
 	};
 } // namespace KV_trace
 
