@@ -21,6 +21,7 @@ namespace KV_trace {
 		int nthreads;
 		size_t buffer_size;
 		std::string output_csv;
+		std::string cdf_file;
 	};
 } // namespace KV_trace
 

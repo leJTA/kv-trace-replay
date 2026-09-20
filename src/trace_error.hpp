@@ -12,7 +12,8 @@ namespace KV_trace {
 		trace_file_open_failed = 1,
 		data_file_open_failed,
 		data_file_too_small,
-		csv_file_open_failed
+		output_csv_file_open_failed,
+		cdf_file_open_failed
 	};
 
 	struct Trace_error_category : std::error_category {
@@ -26,8 +27,10 @@ namespace KV_trace {
 				return "unable to open data file";
 			case Trace_error::data_file_too_small:
 				return "data file is too small";
-			case Trace_error::csv_file_open_failed:
-				return "unable to open csv file";
+			case Trace_error::output_csv_file_open_failed:
+				return "unable to open output csv file";
+			case Trace_error::cdf_file_open_failed:
+				return "unable to open cdf file";
 			default:
 				return "unknown error";
 			}

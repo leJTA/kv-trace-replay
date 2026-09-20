@@ -22,7 +22,7 @@ namespace KV_trace {
 			: _data_file{config.data_file}, _data_source{_max_data_size},
 			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file},
 			  _sender_pool{config.nthreads, config.host, config.port, config.protocol},
-			  _output_csv{config.output_csv}
+			  _output_csv{config.output_csv}, _cdf_file{config.cdf_file}
 		{}
 
 		std::error_code run()
@@ -52,7 +52,7 @@ namespace KV_trace {
 			if (!_output_csv.empty()) {
 				std::ofstream csv{_output_csv, std::ios::app};
 				if (!csv.is_open()) {
-					return Trace_error::csv_file_open_failed;
+					return Trace_error::output_csv_file_open_failed;
 				}
 				std::println(csv, "requests,min,max,mean,median,p90,p95,p99,p99.9");
 				std::println(
@@ -63,6 +63,17 @@ namespace KV_trace {
 					_sender_pool.statistics()->percentile(95),
 					_sender_pool.statistics()->percentile(99),
 					_sender_pool.statistics()->percentile(99.9));
+			}
+
+			if (!_cdf_file.empty()) {
+				std::ofstream file{_cdf_file, std::ios::trunc};
+				if (!file.is_open()) {
+					return Trace_error::cdf_file_open_failed;
+				}
+				std::vector<std::pair<double, double>> cdf = _sender_pool.statistics()->cdf();
+				for (const auto& val : cdf) {
+					std::println(file, "{:.1f},{:.3f}", val.first, val.second);
+				}
 			}
 
 			return {};
@@ -77,6 +88,7 @@ namespace KV_trace {
 		Trace_producer _trace_producer;
 		Sender_pool _sender_pool;
 		std::string _output_csv;
+		std::string _cdf_file;
 	};
 } // namespace KV_trace
 

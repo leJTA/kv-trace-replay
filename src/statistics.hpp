@@ -33,6 +33,15 @@ namespace KV_trace {
 		int64_t min() const { return hdr_min(_time_histogram.get()); }
 		int64_t max() const { return hdr_max(_time_histogram.get()); }
 		int64_t total_count() const { return _time_histogram->total_count; }
+		std::vector<std::pair<double, double>> cdf() const
+		{
+			std::vector<std::pair<double, double>> cdf;
+			for (int i = 1; i <= 1000; ++i) {
+				double p = i / 10.0;
+				cdf.emplace_back(p, hdr_value_at_percentile(_time_histogram.get(), p));
+			}
+			return cdf;
+		}
 
 	private:
 		std::unique_ptr<hdr_histogram, decltype(&hdr_close)> _time_histogram;

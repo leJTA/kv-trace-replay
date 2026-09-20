@@ -52,6 +52,7 @@ namespace KV_trace {
 				("threads,t", po::value<int>()->default_value(4), "number of sender threads")
 				("buffer-size,b", po::value<size_t>()->default_value(4096), "size of the request buffer")
 				("output-csv,o", po::value<std::string>(), "export the statistics to the given csv file")
+				("cdf", po::value<std::string>(), "export the CDF to the given file")
 			;
 			// clang-format on
 			po::variables_map vm;
@@ -73,8 +74,11 @@ namespace KV_trace {
 			port = vm["port"].as<int>();
 			nthreads = vm["threads"].as<int>();
 			buffer_size = vm["buffer-size"].as<size_t>();
-			if (vm.contains("output-csv")) {
+			if (vm.count("output-csv")) {
 				output_csv = vm["output-csv"].as<std::string>();
+			}
+			if (vm.count("cdf")) {
+				cdf_file = vm["cdf"].as<std::string>();
 			}
 		}
 		catch (std::exception& e) {
