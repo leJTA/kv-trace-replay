@@ -78,7 +78,7 @@ namespace KV_trace {
 				output_csv = vm["output-csv"].as<std::string>();
 			}
 			if (vm.count("cdf")) {
-				cdf_file = vm["cdf"].as<std::string>();
+				output_cdf = vm["cdf"].as<std::string>();
 			}
 		}
 		catch (std::exception& e) {

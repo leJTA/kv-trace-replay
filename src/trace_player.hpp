@@ -22,7 +22,7 @@ namespace KV_trace {
 			: _data_file{config.data_file}, _data_source{_max_data_size},
 			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file},
 			  _sender_pool{config.nthreads, config.host, config.port, config.protocol},
-			  _output_csv{config.output_csv}, _cdf_file{config.cdf_file}
+			  _output_csv{config.output_csv}, _cdf_file{config.output_cdf}
 		{}
 
 		std::error_code run()
@@ -52,7 +52,7 @@ namespace KV_trace {
 			if (!_output_csv.empty()) {
 				std::ofstream csv{_output_csv, std::ios::app};
 				if (!csv.is_open()) {
-					return Trace_error::output_csv_file_open_failed;
+					return Trace_error::csv_file_open_failed;
 				}
 				std::println(csv, "requests,min,max,mean,median,p90,p95,p99,p99.9");
 				std::println(
