@@ -25,6 +25,7 @@ Command line options:
   -t [ --threads ] arg (=4)        number of sender threads
   -b [ --buffer-size ] arg (=4096) size of the request buffer
   -o [ --output-csv ] arg          export the statistics to the given csv file
+  --cdf arg                        export the CDF to the given file
 ```
 
 Trace preload usage :
