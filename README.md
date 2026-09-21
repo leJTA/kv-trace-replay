@@ -22,6 +22,8 @@ Command line options:
   -h [ --host ] arg (=localhost)   host address
   -p [ --port ] arg (=9000)        host port
   -x [ --protocol ] arg (=http)    request protocol: http, tcp or console
+  --ignore-timing                  execute trace requests without respecting 
+                                   their timestamps
   -t [ --threads ] arg (=4)        number of sender threads
   -b [ --buffer-size ] arg (=4096) size of the request buffer
   -o [ --output-csv ] arg          export the statistics to the given csv file
