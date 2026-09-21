@@ -30,6 +30,19 @@ Command line options:
   --cdf arg                        export the CDF to the given file
 ```
 
+Trace client usage :
+```shell
+# ./build/bin/kv_trace_client --help
+
+Options:
+  -h [ --help ]                print this help message
+  -p [ --port ] arg            listening port
+  -b [ --db-path ] arg         rocksDB path
+  -t [ --threads ] arg (=1)    number of HTTP worker threads
+  --memc-host arg (=127.0.0.1) Memcached host
+  --memc-port arg (=11211)     Memcached port
+```
+
 Trace preload usage :
 
 ```shell
