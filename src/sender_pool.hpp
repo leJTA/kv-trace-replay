@@ -23,19 +23,20 @@ namespace KV_trace {
 
 	class Sender_pool {
 	public:
-		Sender_pool(int pool_size, const std::string& host, int port, Protocol protocol)
+		Sender_pool(int pool_size, const std::string& host, int port, Protocol protocol,
+					bool ignore_timing)
 			: _request_buffer{nullptr}, _pool_size{pool_size}, _host{host}, _port{port},
-			  _protocol{protocol}
+			  _protocol{protocol}, _ignore_timing{ignore_timing}
 		{
 			switch (_protocol) {
 			case Protocol::tcp:
-				_request_sender = [this](const Request& req) { this->send_tcp_request(req); };
+				_request_sender = [this](const Request& req) { this->_send_tcp_request(req); };
 				break;
 			case Protocol::http:
-				_request_sender = [this](const Request& req) { this->send_http_request(req); };
+				_request_sender = [this](const Request& req) { this->_send_http_request(req); };
 				break;
 			case Protocol::console:
-				_request_sender = [this](const Request& req) { this->send_console_request(req); };
+				_request_sender = [this](const Request& req) { this->_send_console_request(req); };
 				break;
 			default:
 				break;
@@ -71,11 +72,34 @@ namespace KV_trace {
 		// Statistics
 		Statistics* statistics() const { return &_total_stats; }
 
-		// Request Handlers
-		void send_console_request(const Request& req)
+	private:
+		inline static thread_local Statistics _stats;
+		inline static Statistics _total_stats;
+
+		Request_sender _request_sender;
+		Request_buffer* _request_buffer;
+		Data_source* _data_source;
+		std::chrono::steady_clock::time_point _start_time;
+		std::vector<std::jthread> _pool;
+		int _pool_size;
+		std::string _host;
+		int _port;
+		Protocol _protocol;
+		bool _ignore_timing;
+
+		// Conditional sleep
+		void _try_sleep_for(uint64_t duration)
+		{
+			if (!_ignore_timing) {
+				std::this_thread::sleep_until(_start_time + std::chrono::seconds(duration));
+			}
+		}
+
+		// Request Senders
+		void _send_console_request(const Request& req)
 		{
 			// wait until the time to send the request arrives
-			std::this_thread::sleep_until(_start_time + std::chrono::seconds(req.timestamp));
+			_try_sleep_for(req.timestamp);
 
 			auto begin = std::chrono::steady_clock::now();
 			// console print request
@@ -97,11 +121,11 @@ namespace KV_trace {
 				std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count());
 		}
 
-		void send_http_request(const Request& req)
+		void _send_http_request(const Request& req)
 		{
 			thread_local httplib::Client http_client{_host, _port};
 			// wait until the time to send the request arrives
-			std::this_thread::sleep_until(_start_time + std::chrono::seconds(req.timestamp));
+			_try_sleep_for(req.timestamp);
 
 			auto begin = std::chrono::steady_clock::now();
 			// send http request
@@ -123,10 +147,10 @@ namespace KV_trace {
 				std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count());
 		}
 
-		void send_tcp_request(const Request& req)
+		void _send_tcp_request(const Request& req)
 		{
 			// TODO : tcp client
-			std::this_thread::sleep_until(_start_time + std::chrono::seconds(req.timestamp));
+			_try_sleep_for(req.timestamp);
 
 			auto begin = std::chrono::steady_clock::now();
 			// TODO : send request, read response
@@ -134,20 +158,6 @@ namespace KV_trace {
 			_stats.record_time(
 				std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count());
 		}
-
-	private:
-		inline static thread_local Statistics _stats;
-		inline static Statistics _total_stats;
-
-		Request_sender _request_sender;
-		Request_buffer* _request_buffer;
-		Data_source* _data_source;
-		std::chrono::steady_clock::time_point _start_time;
-		std::vector<std::jthread> _pool;
-		int _pool_size;
-		std::string _host;
-		int _port;
-		Protocol _protocol;
 	};
 } // namespace KV_trace
 

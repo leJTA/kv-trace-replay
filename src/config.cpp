@@ -46,6 +46,8 @@ namespace KV_trace {
 				("trace-file,f", po::value<std::string>()->required(), "trace file")
 				("data-file,d", po::value<std::string>()->required(), "data source file")
 				("host,h", po::value<std::string>()->default_value("localhost"), "host address")
+				("ignore-timing", po::bool_switch(&ignore_timing),
+					"execute trace requests without respecting their timestamps")
 				("port,p", po::value<int>()->default_value(9000), "host port")
 				("protocol,x", po::value<Protocol>(&protocol)->default_value(Protocol::http),
 					"request protocol: http, tcp or console")

@@ -15,6 +15,7 @@ namespace KV_trace {
 		std::string help_msg;
 		std::string trace_file;
 		std::string data_file;
+		bool ignore_timing = false;
 		std::string host;
 		int port;
 		KV_trace::Protocol protocol;
