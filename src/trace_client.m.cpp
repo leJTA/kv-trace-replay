@@ -24,7 +24,6 @@ namespace po = boost::program_options;
 // -----------------------------------------------------------------------------
 
 struct Config {
-	std::string host;
 	uint16_t port = 0;
 	std::string db_path;
 	unsigned int threads = 1;
@@ -127,10 +126,11 @@ public:
 		// try to get from Memcached
 		size_t len;
 		uint32_t flags;
-		char* val = memcached_get(memc, key.c_str(), key.size(), &len, &flags, NULL);
+		std::unique_ptr<char[]> val{
+			memcached_get(memc, key.c_str(), key.size(), &len, &flags, NULL)};
 
-		if (val) { // cache hit
-			value.copy(val, len);
+		if (val.get()) { // cache hit
+			value.assign(val.get(), len);
 			const auto end = std::chrono::steady_clock::now();
 			const auto elapsed =
 				std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
 
 	server.Get(R"(/(.+))", [&client](const httplib::Request& req, httplib::Response& res) {
 		const std::string key = req.matches[1];
-		std::string value;
+		thread_local std::string value;
 
 		if (!client.get(key, value)) {
 			res.status = 404;
@@ -272,11 +272,11 @@ int main(int argc, char* argv[])
 		}
 
 		res.set_content(value, "application/octet-stream");
+		value.clear();
 	});
 
 	server.Post(R"(/(.+))", [&client](const httplib::Request& req, httplib::Response& res) {
 		const std::string key = req.matches[1];
-		std::string value;
 
 		if (!client.set(key, req.body)) {
 			res.status = 404;
