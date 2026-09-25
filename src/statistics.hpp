@@ -24,6 +24,7 @@ namespace KV_trace {
 			std::lock_guard<std::mutex> lock{_mut};
 			hdr_add(_time_histogram.get(), from._time_histogram.get());
 		}
+		void record_total_time(int64_t total_time) { _total_time = total_time; }
 
 		int64_t percentile(double percentile) const
 		{
@@ -33,6 +34,7 @@ namespace KV_trace {
 		int64_t min() const { return hdr_min(_time_histogram.get()); }
 		int64_t max() const { return hdr_max(_time_histogram.get()); }
 		int64_t total_count() const { return _time_histogram->total_count; }
+		int64_t total_time() const { return _total_time; }
 		std::vector<std::pair<double, double>> cdf() const
 		{
 			std::vector<std::pair<double, double>> cdf;
@@ -45,6 +47,7 @@ namespace KV_trace {
 
 	private:
 		std::unique_ptr<hdr_histogram, decltype(&hdr_close)> _time_histogram;
+		int64_t _total_time;
 		std::mutex _mut;
 	};
 } // namespace KV_trace

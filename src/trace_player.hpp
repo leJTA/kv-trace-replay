@@ -55,11 +55,12 @@ namespace KV_trace {
 				if (!csv.is_open()) {
 					return Trace_error::csv_file_open_failed;
 				}
-				std::println(csv, "requests,min,max,mean,median,p90,p95,p99,p99.9");
+				std::println(csv, "requests,time,min,max,mean,median,p90,p95,p99,p99.9");
 				std::println(
-					csv, "{},{},{},{},{},{},{},{},{}", _sender_pool.statistics()->total_count(),
-					_sender_pool.statistics()->min(), _sender_pool.statistics()->max(),
-					_sender_pool.statistics()->mean(), _sender_pool.statistics()->percentile(50),
+					csv, "{},{},{},{},{},{},{},{},{},{}", _sender_pool.statistics()->total_count(),
+					_sender_pool.statistics()->total_time(), _sender_pool.statistics()->min(),
+					_sender_pool.statistics()->max(), _sender_pool.statistics()->mean(),
+					_sender_pool.statistics()->percentile(50),
 					_sender_pool.statistics()->percentile(90),
 					_sender_pool.statistics()->percentile(95),
 					_sender_pool.statistics()->percentile(99),

@@ -133,7 +133,7 @@ public:
 			value.assign(val.get(), len);
 			const auto end = std::chrono::steady_clock::now();
 			const auto elapsed =
-				std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+				std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
 			_statistics.record_hit();
 			_statistics.record_time(elapsed);
@@ -152,7 +152,7 @@ public:
 
 		const auto end = std::chrono::steady_clock::now();
 		const auto elapsed =
-			std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+			std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
 		_statistics.record_miss();
 		_statistics.record_time(elapsed);
@@ -173,7 +173,7 @@ public:
 
 		const auto end = std::chrono::steady_clock::now();
 		const auto elapsed =
-			std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+			std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
 		_statistics.record_time(elapsed);
 
@@ -296,14 +296,14 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	constexpr double million = 1'000'000.0;
+	constexpr double thounsand = 1'000.0;
 	std::println("requests = {}, hits = {}, misses = {}, min = {} ms, max = {} ms, avg = {} ms, "
 				 "median = {} ms, p90 = {} ms, p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
 				 statistics.total_count(), (ulong)statistics.hits, (ulong)statistics.misses,
-				 statistics.min() / million, statistics.max() / million,
-				 statistics.mean() / million, statistics.percentile(50) / million,
-				 statistics.percentile(90) / million, statistics.percentile(95) / million,
-				 statistics.percentile(99) / million, statistics.percentile(99.9) / million);
+				 statistics.min() / thounsand, statistics.max() / thounsand,
+				 statistics.mean() / thounsand, statistics.percentile(50) / thounsand,
+				 statistics.percentile(90) / thounsand, statistics.percentile(95) / thounsand,
+				 statistics.percentile(99) / thounsand, statistics.percentile(99.9) / thounsand);
 
 	return EXIT_SUCCESS;
 }

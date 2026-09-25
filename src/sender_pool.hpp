@@ -67,6 +67,10 @@ namespace KV_trace {
 			for (auto& client : _pool) {
 				client.join();
 			}
+			auto end_time = std::chrono::steady_clock::now();
+			_total_stats.record_total_time(
+				std::chrono::duration_cast<std::chrono::microseconds>(end_time - _start_time)
+					.count());
 		}
 
 		// Statistics
@@ -118,7 +122,7 @@ namespace KV_trace {
 			}
 			auto end = std::chrono::steady_clock::now();
 			_stats.record_time(
-				std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count());
+				std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count());
 		}
 
 		void _send_http_request(const Request& req)
@@ -144,7 +148,7 @@ namespace KV_trace {
 			}
 			auto end = std::chrono::steady_clock::now();
 			_stats.record_time(
-				std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count());
+				std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count());
 		}
 
 		void _send_tcp_request(const Request& req)
@@ -156,7 +160,7 @@ namespace KV_trace {
 			// TODO : send request, read response
 			auto end = std::chrono::steady_clock::now();
 			_stats.record_time(
-				std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count());
+				std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count());
 		}
 	};
 } // namespace KV_trace

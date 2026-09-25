@@ -36,17 +36,15 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	constexpr double million = 1'000'000.0;
+	constexpr double thounsand = 1'000.0;
+	const auto* stats = player.statistics();
 	std::println(
-		"total requests = {}, min = {} ms, max = {} ms, avg = {} ms, median = {} ms, p90 = {} ms, "
-		"p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
-		player.statistics()->total_count(), player.statistics()->min() / million,
-		player.statistics()->max() / million, player.statistics()->mean() / million,
-		player.statistics()->percentile(50) / million,
-		player.statistics()->percentile(90) / million,
-		player.statistics()->percentile(95) / million,
-		player.statistics()->percentile(99) / million,
-		player.statistics()->percentile(99.9) / million);
+		"requests = {}, time = {} ms, min = {} ms, max = {} ms, avg = {} ms, median = {} ms, "
+		"p90 = {} ms, p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
+		stats->total_count(), stats->total_time() / thounsand, stats->min() / thounsand,
+		stats->max() / thounsand, stats->mean() / thounsand, stats->percentile(50) / thounsand,
+		stats->percentile(90) / thounsand, stats->percentile(95) / thounsand,
+		stats->percentile(99) / thounsand, stats->percentile(99.9) / thounsand);
 
 	return EXIT_SUCCESS;
 }
