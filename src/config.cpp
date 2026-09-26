@@ -48,7 +48,7 @@ namespace KV_trace {
 				("host,h", po::value<std::string>()->default_value("localhost"), "host address")
 				("port,p", po::value<int>()->default_value(9000), "host port")
 				("protocol,x", po::value<Protocol>(&protocol)->default_value(Protocol::http),
-				"request protocol: http, tcp or console")
+					"request protocol: http, tcp or console")
 				("ignore-timing", po::bool_switch(&ignore_timing),
 					"execute trace requests without respecting their timestamps")
 				("threads,t", po::value<int>()->default_value(4), "number of sender threads")
