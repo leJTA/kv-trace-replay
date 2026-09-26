@@ -85,7 +85,7 @@ public:
 		table_options.cache_index_and_filter_blocks = false;
 		options.table_factory.reset(NewBlockBasedTableFactory(table_options));
 
-		options.create_if_missing = true;
+		options.create_if_missing = false;
 
 		// Blob options
 		options.enable_blob_files = true;
