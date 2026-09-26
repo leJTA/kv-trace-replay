@@ -95,6 +95,7 @@ int main(int argc, char* argv[])
 	}
 
 	std::string line;
+	std::string key;
 	std::uint64_t inserted = 0;
 	std::uint64_t total_size = 0;
 	while (std::getline(trace, line)) {
@@ -105,7 +106,7 @@ int main(int argc, char* argv[])
 		if (request.value_size == 0)
 			continue;
 
-		const std::string key{request.key, request.key_size};
+		key.assign(request.key, request.key_size);
 		const rocksdb::Slice value{data_source.data(), request.value_size};
 
 		status = db->Put(rocksdb::WriteOptions{}, key, value);
@@ -121,6 +122,7 @@ int main(int argc, char* argv[])
 
 		++inserted;
 		total_size += request.value_size;
+		key.clear();
 	}
 
 	delete db;
