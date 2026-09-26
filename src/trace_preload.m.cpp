@@ -17,6 +17,7 @@ namespace KV_trace {
 		std::string data_file;
 		std::string trace_file;
 		std::string db_path;
+		uint threads;
 		bool verbose;
 	};
 
@@ -34,6 +35,8 @@ namespace KV_trace {
             ("trace-file,f", po::value<std::string>(&config.trace_file)->required(), "trace file")
             ("db-path,b", po::value<std::string>(&config.db_path)->required(), 
                 "RocksDB database path")
+			("threads,t", po::value<unsigned int>(&config.threads)->default_value(8),
+            	"number of writer threads")
             ("verbose,v", po::bool_switch(&config.verbose), "print requests while preloading");
 		// clang-format on
 
@@ -80,6 +83,8 @@ int main(int argc, char* argv[])
 
 	// Open RocksDB
 	rocksdb::Options options;
+	options.enable_pipelined_write = true;
+	options.IncreaseParallelism(config.threads);
 	options.create_if_missing = true;
 	rocksdb::DB* db = nullptr;
 
