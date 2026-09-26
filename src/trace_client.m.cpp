@@ -77,15 +77,13 @@ public:
 	{
 		rocksdb::Options options;
 		rocksdb::BlockBasedTableOptions table_options;
+		
 		options.create_if_missing = false;
-		rocksdb::DB* db = nullptr;
 
 		// Disable caching
 		table_options.no_block_cache = true;
 		table_options.cache_index_and_filter_blocks = false;
 		options.table_factory.reset(NewBlockBasedTableFactory(table_options));
-
-		options.create_if_missing = false;
 
 		// Blob options
 		options.enable_blob_files = true;
@@ -109,6 +107,7 @@ public:
 		options.compression = rocksdb::kNoCompression;
 
 		// Open DB
+		rocksdb::DB* db = nullptr;
 		const auto status = rocksdb::DB::Open(options, config.db_path, &db);
 		if (!status.ok()) {
 			std::println(stderr, "failed to open RocksDB: {}", status.ToString());
