@@ -27,7 +27,7 @@ namespace KV_trace {
 
 			std::string line;
 			int count = 0;
-			while (std::getline(trace, line) && count++ < _max_count) {
+			while (std::getline(trace, line) && (_max_count < 0 || count++ < _max_count)) {
 				_request_buffer->push(request_from_csv_line(line));
 			}
 			trace.close();
