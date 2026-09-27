@@ -130,8 +130,6 @@ int main(int argc, char* argv[])
 		key.clear();
 	}
 
-	delete db;
-
 	std::println("---------------------------------");
 	std::println("Preload completed");
 	std::println("---------------------------------");
@@ -148,5 +146,6 @@ int main(int argc, char* argv[])
 	std::println("RocksDB live data   : {:.2f} GiB",
 				 estimated_live_size / (1024.0 * 1024.0 * 1024.0));
 
+	delete db;
 	return EXIT_SUCCESS;
 }
