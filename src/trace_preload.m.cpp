@@ -2,6 +2,7 @@
 #include <print>
 #include <string>
 #include <system_error>
+#include <unordered_set>
 
 #include <boost/program_options.hpp>
 #include <rocksdb/db.h>
@@ -94,6 +95,7 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
+	std::unordered_set<std::string> key_set;
 	std::string line;
 	std::string key;
 	std::uint64_t inserted = 0;
@@ -103,10 +105,12 @@ int main(int argc, char* argv[])
 			continue;
 
 		const auto request = KV_trace::request_from_csv_line(line);
-		if (request.value_size == 0)
+		if (request.value_size == 0 || request.operation == KV_trace::Operation::op_set ||
+			key_set.contains(request.key))
 			continue;
 
 		key.assign(request.key, request.key_size);
+		key_set.insert(key);
 		const rocksdb::Slice value{data_source.data(), request.value_size};
 
 		status = db->Put(rocksdb::WriteOptions{}, key, value);
@@ -130,8 +134,8 @@ int main(int argc, char* argv[])
 	std::println("---------------------------------");
 	std::println("Preload completed");
 	std::println("---------------------------------");
-	std::println("Maximum value size: {}", max_value_size);
-	std::println("Total value size  : {}", total_size);
+	std::println("Maximum value size: {} KB", max_value_size / 1024.0);
+	std::println("Total value size  : {} KB", total_size / 1024.0);
 	std::println("Inserted requests : {}", inserted);
 
 	return EXIT_SUCCESS;
