@@ -20,7 +20,7 @@ namespace KV_trace {
 	public:
 		explicit Trace_player(const Config& config)
 			: _data_file{config.data_file}, _data_source{_max_data_size},
-			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file},
+			  _request_buffer{config.buffer_size}, _trace_producer{config.trace_file, config.limit},
 			  _sender_pool{config.nthreads, config.host, config.port, config.protocol,
 						   config.ignore_timing},
 			  _output_csv{config.output_csv}, _output_cdf{config.output_cdf}

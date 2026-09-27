@@ -49,11 +49,15 @@ namespace KV_trace {
 				("port,p", po::value<int>()->default_value(9000), "host port")
 				("protocol,x", po::value<Protocol>(&protocol)->default_value(Protocol::http),
 					"request protocol: http, tcp or console")
-				("ignore-timing", po::bool_switch(&ignore_timing),
-					"execute trace requests without respecting their timestamps")
+				("ignore-timing,i", po::bool_switch(&ignore_timing),
+					"replay trace requests without respecting their timestamps")
+				("limit,N", po::value<int64_t>(&limit)->default_value(-1), 
+					"replay up to N trace requests")
 				("threads,t", po::value<int>()->default_value(4), "number of sender threads")
-				("buffer-size,b", po::value<size_t>()->default_value(4096), "size of the request buffer")
-				("output-csv,o", po::value<std::string>(), "export the statistics to the given csv file")
+				("buffer-size,b", po::value<size_t>()->default_value(4096), 
+					"size of the request buffer")
+				("output-csv,o", po::value<std::string>(), 
+					"export the statistics to the given csv file")
 				("cdf", po::value<std::string>(), "export the CDF to the given file")
 			;
 			// clang-format on

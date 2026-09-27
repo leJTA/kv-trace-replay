@@ -9,8 +9,8 @@
 namespace KV_trace {
 	class Trace_producer {
 	public:
-		explicit Trace_producer(const std::string& trace_file)
-			: _trace_file{trace_file}, _request_buffer{nullptr}
+		explicit Trace_producer(const std::string& trace_file, int64_t limit)
+			: _trace_file{trace_file}, _request_buffer{nullptr}, _max_count{limit}
 		{}
 
 		void attach_request_buffer(Request_buffer& request_buffer)
@@ -26,7 +26,8 @@ namespace KV_trace {
 			}
 
 			std::string line;
-			while (std::getline(trace, line)) {
+			int count = 0;
+			while (std::getline(trace, line) && count++ < _max_count) {
 				_request_buffer->push(request_from_csv_line(line));
 			}
 			trace.close();
@@ -37,6 +38,7 @@ namespace KV_trace {
 	private:
 		std::string _trace_file;
 		Request_buffer* _request_buffer;
+		const int64_t _max_count;
 	};
 } // namespace KV_trace
 
