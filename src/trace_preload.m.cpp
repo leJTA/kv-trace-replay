@@ -134,8 +134,8 @@ int main(int argc, char* argv[])
 	std::println("---------------------------------");
 	std::println("Preload completed");
 	std::println("---------------------------------");
-	std::println("Maximum value size: {} KB", max_value_size / 1024.0);
-	std::println("Total value size  : {} KB", total_size / 1024.0);
+	std::println("Maximum value size: {:.2f} KB", max_value_size / 1024.0);
+	std::println("Total value size  : {:.2f} KB", total_size / 1024.0);
 	std::println("Inserted requests : {}", inserted);
 
 	return EXIT_SUCCESS;
