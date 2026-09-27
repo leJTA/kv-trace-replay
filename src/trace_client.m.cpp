@@ -39,6 +39,7 @@ struct Statistics {
 	std::unique_ptr<hdr_histogram, decltype(&hdr_close)> times{nullptr, &hdr_close};
 	std::atomic<uint64_t> hits{0};
 	std::atomic<uint64_t> misses{0};
+	std::atomic<uint64_t> errors{0};
 	std::mutex histogram_mutex;
 
 	Statistics()
@@ -50,6 +51,7 @@ struct Statistics {
 
 	void record_hit() { ++hits; }
 	void record_miss() { ++misses; }
+	void record_error() { ++errors; }
 	void record_time(int64_t elapsed_ns)
 	{
 		std::lock_guard lock{histogram_mutex};
@@ -77,7 +79,7 @@ public:
 	{
 		rocksdb::Options options;
 		rocksdb::BlockBasedTableOptions table_options;
-		
+
 		options.create_if_missing = false;
 
 		// Disable caching
@@ -143,6 +145,7 @@ public:
 		const auto status = _db->Get(rocksdb::ReadOptions{}, key, &value);
 
 		if (!status.ok()) {
+			_statistics.record_error();
 			return false;
 		}
 
@@ -296,13 +299,14 @@ int main(int argc, char* argv[])
 	}
 
 	constexpr double thounsand = 1'000.0;
-	std::println("requests = {}, hits = {}, misses = {}, min = {} ms, max = {} ms, avg = {} ms, "
-				 "median = {} ms, p90 = {} ms, p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
-				 statistics.total_count(), (ulong)statistics.hits, (ulong)statistics.misses,
-				 statistics.min() / thounsand, statistics.max() / thounsand,
-				 statistics.mean() / thounsand, statistics.percentile(50) / thounsand,
-				 statistics.percentile(90) / thounsand, statistics.percentile(95) / thounsand,
-				 statistics.percentile(99) / thounsand, statistics.percentile(99.9) / thounsand);
+	std::println(
+		"requests = {}, hits = {}, misses = {}, errors = {}, min = {} ms, max = {} ms, "
+		"avg = {} ms, median = {} ms, p90 = {} ms, p95 = {} ms, p99 = {} ms, p99.9 = {} ms",
+		statistics.total_count(), (ulong)statistics.hits, (ulong)statistics.misses,
+		(ulong)statistics.errors, statistics.min() / thounsand, statistics.max() / thounsand,
+		statistics.mean() / thounsand, statistics.percentile(50) / thounsand,
+		statistics.percentile(90) / thounsand, statistics.percentile(95) / thounsand,
+		statistics.percentile(99) / thounsand, statistics.percentile(99.9) / thounsand);
 
 	return EXIT_SUCCESS;
 }
