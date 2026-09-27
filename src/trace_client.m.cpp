@@ -142,9 +142,11 @@ public:
 			return true;
 		}
 		// cache miss
-		const auto status = _db->Get(rocksdb::ReadOptions{}, key, &value);
+		_statistics.record_miss();
 
+		const auto status = _db->Get(rocksdb::ReadOptions{}, key, &value);
 		if (!status.ok()) {
+			std::println(stderr, "[ERROR] {}{}", status.ToString(), key);
 			_statistics.record_error();
 			return false;
 		}
@@ -156,7 +158,6 @@ public:
 		const auto elapsed =
 			std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-		_statistics.record_miss();
 		_statistics.record_time(elapsed);
 
 		return true;
@@ -170,6 +171,8 @@ public:
 		memcached_set(memc, key.c_str(), key.size(), value.data(), value.length(), 0, 0);
 		const auto status = _db->Put(rocksdb::WriteOptions{}, key, value);
 		if (!status.ok()) {
+			std::println(stderr, "[ERROR] {}{}", status.ToString(), key);
+			_statistics.record_error();
 			return false;
 		}
 
