@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 	rocksdb::Options options;
 	options.enable_pipelined_write = true;
 	options.IncreaseParallelism(config.threads);
+	options.compression = rocksdb::kNoCompression;
 	options.create_if_missing = true;
 	rocksdb::DB* db = nullptr;
 
@@ -105,7 +106,7 @@ int main(int argc, char* argv[])
 			continue;
 
 		const auto request = KV_trace::request_from_csv_line(line);
-		if (request.value_size == 0 || request.operation == KV_trace::Operation::op_set ||
+		if (request.value_size == 0 || request.operation != KV_trace::Operation::op_get ||
 			key_set.contains(request.key))
 			continue;
 
@@ -137,6 +138,15 @@ int main(int argc, char* argv[])
 	std::println("Maximum value size: {:.2f} KB", max_value_size / 1024.0);
 	std::println("Total value size  : {:.2f} KB", total_size / 1024.0);
 	std::println("Inserted requests : {}", inserted);
+
+	uint64_t estimated_live_size = 0;
+	uint64_t estimated_num_keys = 0;
+	db->GetIntProperty(rocksdb::DB::Properties::kEstimateNumKeys, &estimated_num_keys);
+	db->GetIntProperty(rocksdb::DB::Properties::kEstimateLiveDataSize, &estimated_live_size);
+
+	std::println("Estimated number of keys: {}", estimated_num_keys);
+	std::println("RocksDB live data   : {:.2f} GiB",
+				 estimated_live_size / (1024.0 * 1024.0 * 1024.0));
 
 	return EXIT_SUCCESS;
 }
