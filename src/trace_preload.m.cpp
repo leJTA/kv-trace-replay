@@ -99,16 +99,20 @@ int main(int argc, char* argv[])
 	std::unordered_set<std::string> key_set;
 	std::string line;
 	std::string key;
+	KV_trace::Request request;
 	std::uint64_t inserted = 0;
 	std::uint64_t total_size = 0;
 	while (std::getline(trace, line)) {
 		if (line.empty())
 			continue;
 
-		const auto request = KV_trace::request_from_csv_line(line);
-		if (request.value_size == 0 || request.operation != KV_trace::Operation::op_get ||
-			key_set.contains(request.key))
+		request = KV_trace::request_from_csv_line(line);
+		if (request.operation != KV_trace::Operation::op_get || key_set.contains(request.key))
 			continue;
+
+		if (request.value_size == 0) {
+			request.value_size = 1;
+		}
 
 		key.assign(request.key, request.key_size);
 		key_set.insert(key);
@@ -134,7 +138,7 @@ int main(int argc, char* argv[])
 	std::println("Preload completed");
 	std::println("---------------------------------");
 	std::println("Maximum value size: {:.2f} KB", max_value_size / 1024.0);
-	std::println("Total value size  : {:.2f} KB", total_size / 1024.0);
+	std::println("Total value size  : {:.2f} GB", total_size / (1024.0 * 1024.0 * 1024.0));
 	std::println("Inserted requests : {}", inserted);
 
 	uint64_t estimated_live_size = 0;
@@ -142,8 +146,8 @@ int main(int argc, char* argv[])
 	db->GetIntProperty(rocksdb::DB::Properties::kEstimateNumKeys, &estimated_num_keys);
 	db->GetIntProperty(rocksdb::DB::Properties::kEstimateLiveDataSize, &estimated_live_size);
 
-	std::println("Estimated number of keys: {}", estimated_num_keys);
-	std::println("RocksDB live data   : {:.2f} GiB",
+	std::println("RocksDB estimated number of keys: {}", estimated_num_keys);
+	std::println("RocksDB live data   : {:.2f} GB",
 				 estimated_live_size / (1024.0 * 1024.0 * 1024.0));
 
 	delete db;
