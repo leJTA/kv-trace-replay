@@ -12,6 +12,7 @@
 #include "request.hpp"
 
 constexpr size_t max_value_size = 256 * 1024; // 512 KB
+constexpr size_t default_size = 4 * 1024; // 4KB
 
 namespace KV_trace {
 	struct Config {
@@ -31,10 +32,10 @@ namespace KV_trace {
 		// clang-format off
         desc.add_options()
             ("help,h","print this help message")
-            ("data-file,d", po::value<std::string>(&config.data_file)->required(), 
+            ("data-file,d", po::value<std::string>(&config.data_file)->required(),
                 "data source file")
             ("trace-file,f", po::value<std::string>(&config.trace_file)->required(), "trace file")
-            ("db-path,b", po::value<std::string>(&config.db_path)->required(), 
+            ("db-path,b", po::value<std::string>(&config.db_path)->required(),
                 "RocksDB database path")
 			("threads,t", po::value<unsigned int>(&config.threads)->default_value(8),
             	"number of writer threads")
@@ -111,7 +112,7 @@ int main(int argc, char* argv[])
 			continue;
 
 		if (request.value_size == 0) {
-			request.value_size = 1;
+			request.value_size = default_size;
 		}
 
 		key.assign(request.key, request.key_size);

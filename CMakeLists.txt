@@ -48,11 +48,11 @@ set(TRACE_REPLAY_HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_error.hpp
 )
 
-set(TRACE_PRELOAD_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/trace_preload.m.cpp
+set(DB_PRELOAD_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/db_preload.m.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/request.cpp
 )
-set(TRACE_PRELOAD_HDRS
+set(DB_PRELOAD_HDRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/request.hpp
 )
 
@@ -61,7 +61,7 @@ set(TRACE_CLIENT_SRCS
 )
 
 add_executable(kv_trace_replay ${TRACE_REPLAY_SRCS} ${TRACE_REPLAY_HDRS})
-add_executable(kv_trace_preload ${TRACE_PRELOAD_SRCS} ${TRACE_PRELOAD_HDRS})
+add_executable(kv_db_preload ${DB_PRELOAD_SRCS} ${DB_PRELOAD_HDRS})
 add_executable(kv_trace_client ${TRACE_CLIENT_SRCS})
 
 target_link_libraries(kv_trace_replay
@@ -72,7 +72,7 @@ target_link_libraries(kv_trace_replay
         hdr_histogram::hdr_histogram_static
 )
 
-target_link_libraries(kv_trace_preload
+target_link_libraries(kv_db_preload
     PRIVATE
         Boost::program_options
         RocksDB::rocksdb

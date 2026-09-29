@@ -44,10 +44,10 @@ Options:
   --memc-port arg (=11211)     Memcached port
 ```
 
-Trace preload usage :
+DB preload usage :
 
 ```shell
-# ./build/bin/kv_trace_preload --help
+# ./build/bin/kv_db_preload --help
 Command line options:
   -h [ --help ]           print this help message
   -d [ --data-file ] arg  data source file

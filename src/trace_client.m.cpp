@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
             "number of HTTP worker threads")
         ("memc-host", po::value<std::string>(&config.memc_host)->default_value("127.0.0.1"),
             "Memcached host")
-        ("memc-port", po::value<uint16_t>(&config.memc_port)->default_value(11211), 
+        ("memc-port", po::value<uint16_t>(&config.memc_port)->default_value(11211),
             "Memcached port");
 	// clang-format on
 
@@ -289,7 +289,8 @@ int main(int argc, char* argv[])
 		}
 	});
 
-	std::println("Trace client listening on port {} with {} threads", config.port, config.threads);
+	std::println("Trace client listening on port {} with {} thread(s)", config.port, config.threads);
+	std::println("Memcached host and port are {}:{}", config.memc_host, config.memc_port);
 
 	// Register signal handler
 	server_ptr = &server;
