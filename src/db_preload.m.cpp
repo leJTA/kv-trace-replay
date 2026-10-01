@@ -11,8 +11,8 @@
 #include "data_source.hpp"
 #include "request.hpp"
 
-constexpr size_t max_value_size = 256 * 1024; // 512 KB
-constexpr size_t default_size = 4 * 1024; // 4KB
+constexpr size_t max_value_size = 256 * 1024; // 256 KB
+constexpr size_t default_size = 1 * 1024; // 1KB
 
 namespace KV_trace {
 	struct Config {
@@ -21,6 +21,7 @@ namespace KV_trace {
 		std::string db_path;
 		uint threads;
 		bool verbose;
+		bool dry_run;
 	};
 
 	Config parse_command_line(int argc, const char* const argv[])
@@ -39,7 +40,9 @@ namespace KV_trace {
                 "RocksDB database path")
 			("threads,t", po::value<unsigned int>(&config.threads)->default_value(8),
             	"number of writer threads")
-            ("verbose,v", po::bool_switch(&config.verbose), "print requests while preloading");
+			("dry-run,n", po::bool_switch(&config.dry_run), 
+				"perform a trial run with no writes made in database")
+			("verbose,v", po::bool_switch(&config.verbose), "print requests while preloading");
 		// clang-format on
 
 		try {
@@ -66,9 +69,13 @@ int main(int argc, char* argv[])
 {
 	const auto config = KV_trace::parse_command_line(argc, argv);
 
-	std::println("Data file  : {}", config.data_file);
-	std::println("Trace file : {}", config.trace_file);
-	std::println("DB path    : {}", config.db_path);
+	std::println();
+	std::println("Data file : {}", config.data_file);
+	std::println("Trace file: {}", config.trace_file);
+	std::println("DB path   : {}", config.db_path);
+	std::println("Dry run   : {}", config.dry_run ? "yes" : "no");
+	std::println();
+
 
 	std::ifstream trace{config.trace_file};
 	if (!trace) {
@@ -119,11 +126,13 @@ int main(int argc, char* argv[])
 		key_set.insert(key);
 		const rocksdb::Slice value{data_source.data(), request.value_size};
 
-		status = db->Put(rocksdb::WriteOptions{}, key, value);
-		if (!status.ok()) {
-			std::println("Failed to insert key '{}': {}", key, status.ToString());
-			delete db;
-			return EXIT_FAILURE;
+		if (!config.dry_run) {
+			status = db->Put(rocksdb::WriteOptions{}, key, value);
+			if (!status.ok()) {
+				std::println("Failed to insert key '{}': {}", key, status.ToString());
+				delete db;
+				return EXIT_FAILURE;
+			}
 		}
 
 		if (config.verbose) {
@@ -135,21 +144,24 @@ int main(int argc, char* argv[])
 		key.clear();
 	}
 
+	std::println();
 	std::println("---------------------------------");
-	std::println("Preload completed");
+	std::println("Preload completed{}", config.dry_run ? " (dry run)" : "");
 	std::println("---------------------------------");
 	std::println("Maximum value size: {:.2f} KB", max_value_size / 1024.0);
 	std::println("Total value size  : {:.2f} GB", total_size / (1024.0 * 1024.0 * 1024.0));
-	std::println("Inserted requests : {}", inserted);
+	std::println("Inserted values   : {}", inserted);
 
-	uint64_t estimated_live_size = 0;
-	uint64_t estimated_num_keys = 0;
-	db->GetIntProperty(rocksdb::DB::Properties::kEstimateNumKeys, &estimated_num_keys);
-	db->GetIntProperty(rocksdb::DB::Properties::kEstimateLiveDataSize, &estimated_live_size);
+	if (!config.dry_run) {
+		uint64_t estimated_live_size = 0;
+		uint64_t estimated_num_keys = 0;
+		db->GetIntProperty(rocksdb::DB::Properties::kEstimateNumKeys, &estimated_num_keys);
+		db->GetIntProperty(rocksdb::DB::Properties::kEstimateLiveDataSize, &estimated_live_size);
 
-	std::println("RocksDB estimated number of keys: {}", estimated_num_keys);
-	std::println("RocksDB live data   : {:.2f} GB",
-				 estimated_live_size / (1024.0 * 1024.0 * 1024.0));
+		std::println("RocksDB estimated number of keys: {}", estimated_num_keys);
+		std::println("RocksDB live data   : {:.2f} GB",
+					 estimated_live_size / (1024.0 * 1024.0 * 1024.0));
+	}
 
 	delete db;
 	return EXIT_SUCCESS;
