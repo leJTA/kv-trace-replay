@@ -39,6 +39,8 @@ Options:
   -h [ --help ]                print this help message
   -p [ --port ] arg            listening port
   -b [ --db-path ] arg         rocksDB path
+  --unique-db-key arg          specify an entry to use as the data source for 
+                               all request (keys remain distinct)
   -t [ --threads ] arg (=1)    number of HTTP worker threads
   --memc-host arg (=127.0.0.1) Memcached host
   --memc-port arg (=11211)     Memcached port
@@ -48,12 +50,15 @@ DB preload usage :
 
 ```shell
 # ./build/bin/kv_db_preload --help
+
 Command line options:
-  -h [ --help ]           print this help message
-  -d [ --data-file ] arg  data source file
-  -f [ --trace-file ] arg trace file
-  -b [ --db-path ] arg    RocksDB database path
-  -v [ --verbose ]        print requests while preloading
+  -h [ --help ]             print this help message
+  -d [ --data-file ] arg    data source file
+  -f [ --trace-file ] arg   trace file
+  -b [ --db-path ] arg      RocksDB database path
+  -t [ --threads ] arg (=8) number of writer threads
+  -n [ --dry-run ]          perform a trial run with no writes made in database
+  -v [ --verbose ]          print requests while preloading
 ```
 
 ## Trace format
