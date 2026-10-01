@@ -26,6 +26,7 @@ namespace po = boost::program_options;
 struct Config {
 	uint16_t port = 0;
 	std::string db_path;
+	std::string unique_key;
 	unsigned int threads = 1;
 	std::string memc_host;
 	uint16_t memc_port;
@@ -75,8 +76,12 @@ struct Statistics {
 class Client {
 public:
 	Client(const Config& config, Statistics& statistics)
-		: _statistics{statistics}, _memc_host{config.memc_host}, _memc_port{config.memc_port}
+		: _statistics{statistics}, _memc_host{config.memc_host}, _memc_port{config.memc_port},
+		  _unique_key{config.unique_key}
 	{
+		if (!_unique_key.empty())
+			_use_unique_db_key = true;
+
 		rocksdb::Options options;
 		rocksdb::BlockBasedTableOptions table_options;
 
@@ -144,9 +149,11 @@ public:
 		// cache miss
 		_statistics.record_miss();
 
-		const auto status = _db->Get(rocksdb::ReadOptions{}, key, &value);
+		rocksdb::Status status;
+		const std::string_view k = (_use_unique_db_key) ? _unique_key : key;
+		status = _db->Get(rocksdb::ReadOptions{}, k, &value);
 		if (!status.ok()) {
-			std::println(stderr, "[ERROR] {}{}", status.ToString(), key);
+			std::println(stderr, "[ERROR] {}{}", status.ToString(), k);
 			_statistics.record_error();
 			return false;
 		}
@@ -190,6 +197,8 @@ private:
 	std::unique_ptr<rocksdb::DB> _db;
 	std::string _memc_host;
 	uint16_t _memc_port;
+	bool _use_unique_db_key = false;
+	std::string _unique_key;
 
 	memcached_st* _memc_client()
 	{
@@ -232,7 +241,9 @@ int main(int argc, char* argv[])
 	// clang-format off
 	desc.add_options()("help,h", "print this help message")
         ("port,p", po::value<uint16_t>(&config.port)->required(), "listening port")
-        ("db-path,b", po::value<std::string>(&config.db_path)->required(),"rocksDB path")
+        ("db-path,b", po::value<std::string>(&config.db_path)->required(), "rocksDB path")
+		("unique-db-key", po::value<std::string>(&config.unique_key)->default_value(""), 
+			"specify an entry to use as the data source for all request (keys remain distinct)")
         ("threads,t", po::value<unsigned int>(&config.threads)->default_value(1),
             "number of HTTP worker threads")
         ("memc-host", po::value<std::string>(&config.memc_host)->default_value("127.0.0.1"),
@@ -289,7 +300,8 @@ int main(int argc, char* argv[])
 		}
 	});
 
-	std::println("Trace client listening on port {} with {} thread(s)", config.port, config.threads);
+	std::println("Trace client listening on port {} with {} thread(s)", config.port,
+				 config.threads);
 	std::println("Memcached host and port are {}:{}", config.memc_host, config.memc_port);
 
 	// Register signal handler
