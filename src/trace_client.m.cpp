@@ -118,6 +118,7 @@ public:
 		const auto status = rocksdb::DB::Open(options, config.db_path, &db);
 		if (!status.ok()) {
 			std::println(stderr, "failed to open RocksDB: {}", status.ToString());
+			exit(EXIT_FAILURE);
 		}
 
 		_db.reset(db);
