@@ -57,6 +57,7 @@ Command line options:
   -f [ --trace-file ] arg   trace file
   -b [ --db-path ] arg      RocksDB database path
   -t [ --threads ] arg (=8) number of writer threads
+  -N [ --limit ] arg (=-1)  preload data only for the first N trace requests
   -n [ --dry-run ]          perform a trial run with no writes made in database
   -v [ --verbose ]          print requests while preloading
 ```
