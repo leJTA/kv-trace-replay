@@ -20,7 +20,8 @@ namespace KV_trace {
 		std::string trace_file;
 		std::string db_path;
 		uint threads;
-		int64_t limit;
+		int64_t max_requests;
+		int64_t value_size;
 		bool verbose;
 		bool dry_run;
 	};
@@ -41,10 +42,12 @@ namespace KV_trace {
                 "RocksDB database path")
 			("threads,t", po::value<unsigned int>(&config.threads)->default_value(4),
             	"number of writer threads")
-			("limit,N", po::value<int64_t>(&config.limit)->default_value(-1), 
-				"preload data only for the first N trace requests")
-			("dry-run,n", po::bool_switch(&config.dry_run), 
-				"perform a trial run with no writes made in database")
+			("max-requests,N", po::value<int64_t>(&config.max_requests)->default_value(-1),
+				"maximum number of trace requests to process (-1 for all requests)")
+			("value-size,S", po::value<int64_t>(&config.value_size)->default_value(-1),
+				"use a fixed value size in bytes for all objects (-1 to use sizes from trace)")
+			("dry-run,n", po::bool_switch(&config.dry_run),
+				"perform a trial run without writing to the database")
 			("verbose,v", po::bool_switch(&config.verbose), "print requests while preloading");
 		// clang-format on
 
@@ -78,7 +81,6 @@ int main(int argc, char* argv[])
 	std::println("DB path   : {}", config.db_path);
 	std::println("Dry run   : {}", config.dry_run ? "yes" : "no");
 	std::println();
-
 
 	std::ifstream trace{config.trace_file};
 	if (!trace) {
@@ -114,7 +116,8 @@ int main(int argc, char* argv[])
 	KV_trace::Request request;
 	std::uint64_t inserted = 0;
 	std::uint64_t total_size = 0;
-	while (std::getline(trace, line) && (config.limit < 0 || count++ < config.limit)) {
+	while (std::getline(trace, line) &&
+		   (config.max_requests < 0 || count++ < config.max_requests)) {
 		if (line.empty())
 			continue;
 
@@ -122,7 +125,10 @@ int main(int argc, char* argv[])
 		if (request.operation != KV_trace::Operation::op_get || key_set.contains(request.key))
 			continue;
 
-		if (request.value_size == 0) {
+		if (config.value_size > 0) {
+			request.value_size = config.value_size;
+		}
+		else if (request.value_size == 0) {
 			request.value_size = default_size;
 		}
 
@@ -163,8 +169,7 @@ int main(int argc, char* argv[])
 		db->GetIntProperty(rocksdb::DB::Properties::kEstimateLiveDataSize, &estimated_live_size);
 
 		std::println("RocksDB estimated number of keys: {}", estimated_num_keys);
-		std::println("RocksDB live data   : {:.2f} MB",
-					 estimated_live_size / (1024.0 * 1024.0));
+		std::println("RocksDB live data   : {:.2f} MB", estimated_live_size / (1024.0 * 1024.0));
 	}
 
 	delete db;
