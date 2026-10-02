@@ -51,8 +51,8 @@ namespace KV_trace {
 					"request protocol: http, tcp or console")
 				("ignore-timing,i", po::bool_switch(&ignore_timing),
 					"replay trace requests without respecting their timestamps")
-				("limit,N", po::value<int64_t>(&limit)->default_value(-1), 
-					"replay up to N trace requests")
+				("max-requests,N", po::value<int64_t>(&max_requests)->default_value(-1), 
+					"maximum number of trace requests to replay (-1 for all requests)")
 				("threads,t", po::value<int>()->default_value(4), "number of sender threads")
 				("buffer-size,b", po::value<size_t>()->default_value(4096), 
 					"size of the request buffer")
